@@ -1,2 +1,7 @@
-<h1>hello ahmed how are you {{ title() }}</h1>
-<h1>hello ahmed how are you {{ title2() }}</h1>
+<h1 class="text-3xl text-red-500">hello that's {{ title() }} App</h1>
+
+<ul>
+    @for (member of members(); track member.Id) {
+        <li>{{ member.id }} - {{ member.displayName }} - {{ member.email }}</li>
+    }
+</ul>

@@ -6,7 +6,6 @@ namespace API.Entities;
 public class AppUser
 {
     [Key]
-    [Column(TypeName = "nvarchar(450)")]
     public int Id { get; set; }
     
     [Required]
