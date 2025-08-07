@@ -10,9 +10,15 @@ public class AppUser
     
     [Required]
     [Column(TypeName = "nvarchar(100)")]
-    public string DisplayName { get; set; }
+    public required string DisplayName { get; set; }
     
     [Required]
     [Column(TypeName = "nvarchar(100)")]
-    public string Email { get; set; }
+    public required string Email { get; set; }
+
+    [Required]
+    public required byte[] PasswordHash { get; set; }
+
+    [Required]
+    public required byte[] PasswordSalt { get; set; }
 }
