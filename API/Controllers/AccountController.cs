@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,12 +34,7 @@ namespace API.Controllers
             context.Users.Add(user);
             await context.SaveChangesAsync();
             
-            return Ok( new UserDTO {
-                Id = user.Id,
-                DisplayName = user.DisplayName,
-                Email = user.Email,
-                Token = tokenService.CreateToken(user)
-            });
+            return Ok(user.ToDto(tokenService));
         }
 
         [HttpGet("login")]
@@ -56,12 +52,7 @@ namespace API.Controllers
                 return Unauthorized("Invalid Password");
             }
             
-            return new UserDTO {
-                Id = user.Id,
-                DisplayName = user.DisplayName,
-                Email = user.Email,
-                Token = tokenService.CreateToken(user)
-            };
+            return user.ToDto(tokenService);
         }
 
         private async Task<bool> EmailExist(string email) 
