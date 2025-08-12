@@ -1,0 +1,72 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using API.Data;
+using API.DTOs;
+using API.Entities;
+using API.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AccountController(AppDbContext context, ITokenService tokenService) : ControllerBase
+    {
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDTO>> Register(RegisterDTO register) 
+        {
+            if(await EmailExist(register.Email))
+                return BadRequest("Email taken before");
+
+            using var hmac = new HMACSHA512();
+
+            var user = new AppUser {
+                DisplayName = register.DisplayName,
+                Email = register.Email,
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(register.Password)),
+                PasswordSalt = hmac.Key
+            };
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+            
+            return Ok( new UserDTO {
+                Id = user.Id,
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                Token = tokenService.CreateToken(user)
+            });
+        }
+
+        [HttpGet("login")]
+        public async Task<ActionResult<UserDTO>> Login(LoginDTO login) 
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email.Equals(login.Email));
+            if(user == null)
+                return Unauthorized("Invalid email address");
+            
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+            var ComputeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(login.Password));
+
+            if(!ComputeHash.SequenceEqual(user.PasswordHash)) 
+            {
+                return Unauthorized("Invalid Password");
+            }
+            
+            return new UserDTO {
+                Id = user.Id,
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                Token = tokenService.CreateToken(user)
+            };
+        }
+
+        private async Task<bool> EmailExist(string email) 
+        {
+            return await context.Users.AnyAsync(u => u.Email.ToLower().Equals(email.ToLower()));
+        }
+    }
+}
