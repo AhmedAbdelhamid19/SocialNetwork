@@ -37,7 +37,7 @@ namespace API.Controllers
             return Ok(user.ToDto(tokenService));
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO login) 
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.Email.Equals(login.Email));
