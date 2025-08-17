@@ -16,11 +16,11 @@
             <a>Messages</a>
         </nav>
         <div class="flex items-center ml-auto gab-3">
-            @if(loggedIn()) {
+            @if(accountService.currentUser(); as user) {
                 <div class="dropdown dropdown-center mr-12">
                     <div tabindex="0" role="button" class="flex flex-col items-center text-white text-xl gap-0 ">
                         <img src="/user.png" alt="user avatar" class="size-11.5 rounded-full">
-                        <span class="text-sm">Bob</span>
+                        <span class="text-sm">{{user.displayName}}</span>
                     </div>
                     <ul tabindex="0" class="dropdown-content dropdown-end menu bg-base-100 rounded-box z-50 w-52 shadow-lg">
                       <li><a>Edit Profile</a></li>
@@ -33,7 +33,6 @@
                     <input [(ngModel)]="creds.password" name="password" type="password" class="input" placeholder="password">
                     <button type="submit" class="btn">Login</button>
                 </form>
-    
             }
         </div>
     </div>
