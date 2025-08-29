@@ -1,0 +1,214 @@
+{
+	"info": {
+		"_postman_id": "80c7dce4-36fa-4774-88cd-a35dfc7bbbab",
+		"name": "Social Network App",
+		"description": "This app Build using ASP Dotnet and Angular, used to communicate between users and has alot of features and features will be added soon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46413350"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"displayName\": \"ahmed\",\r\n    \"email\": \"ahmedgamed@gmail.com\",\r\n    \"password\": \"ahmed123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet}}/account/register",
+							"host": [
+								"{{dotnet}}"
+							],
+							"path": [
+								"account",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ahmedaways200219@gmail.com\",\r\n    \"Password\": \"ahmed123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet}}/account/login",
+							"host": [
+								"{{dotnet}}"
+							],
+							"path": [
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Members",
+			"item": [
+				{
+					"name": "Get Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet}}/members/getusers",
+							"host": [
+								"{{dotnet}}"
+							],
+							"path": [
+								"members",
+								"getusers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxMCIsInVuaXF1ZV9uYW1lIjoiYWhtZWQiLCJlbWFpbCI6ImFobWVkYXdheXMyMDAyMTlAZ21haWwuY29tIiwibmJmIjoxNzU0OTI1NTU3LCJleHAiOjE3NTU1MzAzNTcsImlhdCI6MTc1NDkyNTU1N30.FL1G7K_GYtxV3ICQGyHhvleTwHuX_ZeOeViR8fmyqWQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet}}/members/getuser/10",
+							"host": [
+								"{{dotnet}}"
+							],
+							"path": [
+								"members",
+								"getuser",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bug",
+			"item": [
+				{
+					"name": "Unauthorized",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localDotnet}}/bug/auth",
+							"host": [
+								"{{localDotnet}}"
+							],
+							"path": [
+								"bug",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "NotFound",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localDotnet}}/bug/not-found",
+							"host": [
+								"{{localDotnet}}"
+							],
+							"path": [
+								"bug",
+								"not-found"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Server Error",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localDotnet}}/bug/server-error",
+							"host": [
+								"{{localDotnet}}"
+							],
+							"path": [
+								"bug",
+								"server-error"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bad Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localDotnet}}/bug/bad-request",
+							"host": [
+								"{{localDotnet}}"
+							],
+							"path": [
+								"bug",
+								"bad-request"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
