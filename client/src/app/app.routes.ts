@@ -4,7 +4,9 @@ import { MemeberList } from '../features/members/memeber-list/memeber-list';
 import { Lists } from '../features/lists/lists';
 import { Messages } from '../features/messages/messages';
 import { authGuard } from '../core/guards/auth-guard';
-import { TestErrors } from '../feature/test-errors/test-errors';
+import { TestErrors } from '../features/test-errors/test-errors';
+import { NotFound } from '../shared/errors/not-found/not-found';
+import { ServerError } from '../shared/errors/server-error/server-error';
 
 export const routes: Routes = [
     {path: '', component: Home},
@@ -19,5 +21,6 @@ export const routes: Routes = [
         ]
     },
     {path: 'errors', component: TestErrors},
-    {path: '**', component: Home}
+    {path: 'server-error', component: ServerError},
+    {path: '**', component: NotFound}
 ];
