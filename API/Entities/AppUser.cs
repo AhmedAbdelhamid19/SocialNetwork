@@ -21,4 +21,7 @@ public class AppUser
 
     [Required]
     public required byte[] PasswordSalt { get; set; }
+
+    public string? ImageUrl { get; set; }
+
 }
