@@ -5,23 +5,14 @@ namespace API.Entities;
 
 public class AppUser
 {
-    [Key]
     public int Id { get; set; }
-    
-    [Required]
-    [Column(TypeName = "nvarchar(100)")]
     public required string DisplayName { get; set; }
-    
-    [Required]
-    [Column(TypeName = "nvarchar(100)")]
     public required string Email { get; set; }
-
-    [Required]
+    public string? ImageUrl { get; set; }
     public required byte[] PasswordHash { get; set; }
-
-    [Required]
     public required byte[] PasswordSalt { get; set; }
 
-    public string? ImageUrl { get; set; }
 
+    // Nav property
+    public Member Member { get; set; } = null!;
 }

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace API.Entities;
 
 public class Member
@@ -12,7 +14,9 @@ public class Member
     public string? Description { get; set; }
     public required string City { get; set; }
     public required string Country { get; set; }
+    public ICollection<Photo> Photos { get; set; } = [];
 
     // Navigation Property
+    [ForeignKey(nameof(Id))]
     public AppUser User { get; set; } = null!;
 }

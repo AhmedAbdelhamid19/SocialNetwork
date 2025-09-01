@@ -1,4 +1,5 @@
 using System;
+using System.Data.SqlTypes;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 
