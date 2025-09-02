@@ -4,27 +4,28 @@ using Microsoft.AspNetCore.Mvc;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using API.Interfaces;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MembersController(AppDbContext context) : ControllerBase
+    public class MembersController(IMemberRepository memberRepository) : ControllerBase
     {
-        private readonly AppDbContext _context = context;
+        private readonly IMemberRepository _memberRepository = memberRepository;
         
-        [HttpGet("GetUsers")] //https://localhost:5001/api/members/getusers
-        public async Task<ActionResult<IReadOnlyList<AppUser>>> GetUsers()
+        [HttpGet("GetUsers")]
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _memberRepository.GetMembersAsync();
             return Ok(users);
         }
 
         [Authorize]
-        [HttpGet("GetUser/{id}")] // https://localhost:5001/api/members/getuser/1
-        public async Task<ActionResult<AppUser>> GetUser(int id)
+        [HttpGet("GetUser/{id}")]
+        public async Task<ActionResult<Member>> GetMember(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _memberRepository.GetMemberByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
