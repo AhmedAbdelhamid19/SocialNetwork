@@ -1,5 +1,5 @@
 using System;
-
+using System.Text.Json.Serialization;
 namespace API.Entities;
 
 public class Photo
@@ -10,6 +10,7 @@ public class Photo
 
     // Nav Props
     // as in facebook, if you post photo, this photo belong to only one member, it may be in post, message ...etc.
+    [JsonIgnore]
     public Member Member { get; set; } = null!; 
     public int MemberId { get; set; }
 }

@@ -23,8 +23,8 @@
         <div class="flex items-center ml-auto gab-3">
             @if(accountService.currentUser(); as user) {
                 <div class="dropdown dropdown-center mr-12">
-                    <div tabindex="0" role="button" class="flex flex-col items-center text-white text-xl gap-0 ">
-                        <img src="/user.png" alt="user avatar" class="size-11.5 rounded-full">
+                    <div tabindex="0" role="button" class="flex items-center text-white text-xl gap-2 ">
+                        <img [src]="user?.imageURL || '/user.png'" alt="user avatar" class="size-13 rounded-full">
                         <span class="text-sm">{{user.displayName}}</span>
                     </div>
                     <ul tabindex="0" class="dropdown-content dropdown-end menu bg-base-100 rounded-box z-50 w-52 shadow-lg">
