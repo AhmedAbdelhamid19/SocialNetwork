@@ -43,7 +43,8 @@ public class Seed
                     Country = member.Country,
                     Created = member.Created,
                     LastActive = member.LastActive
-                }
+                },
+                ImageUrl = member.ImageUrl
             };
 
             user.Member.Photos.Add(new Photo

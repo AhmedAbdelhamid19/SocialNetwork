@@ -2,12 +2,12 @@ using API.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using API.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using API.Interfaces;
 
 namespace API.Controllers
-{
+{        
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MembersController(IMemberRepository memberRepository) : ControllerBase
@@ -21,7 +21,7 @@ namespace API.Controllers
             return Ok(users);
         }
 
-        [Authorize]
+
         [HttpGet("GetUser/{id}")]
         public async Task<ActionResult<Member>> GetMember(int id)
         {
@@ -31,6 +31,13 @@ namespace API.Controllers
                 return NotFound();
             }
             return user;
+        }
+
+        [HttpGet("{id}/photos")]
+        public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(int id)
+        {
+            var photos = await _memberRepository.GetPhotosForMemberAsync(id);
+            return Ok(photos);
         }
     }
 }
