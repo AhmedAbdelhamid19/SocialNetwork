@@ -13,10 +13,10 @@ export class MemberService {
   private baseUrl = environment.apiUrl;
 
   getMembers() {
-    return this.http.get<Member []> (this.baseUrl + 'members', this.getHttpOptions());
+    return this.http.get<Member []> (this.baseUrl + 'members/GetUsers', this.getHttpOptions());
   }
   getMember(id: string) {
-    return this.http.get<Member>(this.baseUrl + 'member' + id, this.getHttpOptions());
+    return this.http.get<Member>(this.baseUrl + 'members/GetUser/' + id, this.getHttpOptions());
   }
   private getHttpOptions() {
     return {
