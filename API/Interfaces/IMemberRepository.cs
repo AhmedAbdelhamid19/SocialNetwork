@@ -4,9 +4,9 @@ namespace API.Interfaces;
 
 public interface IMemberRepository
 {
+    Task<Member?> GetMemberByIdAsync(int id);
+    Task<IReadOnlyList<Member>> GetMembersAsync();
     void Update(Member member);
     Task<bool> SaveAllAsync();
-    Task<IReadOnlyList<Member>> GetMembersAsync();
-    Task<Member?> GetMemberByIdAsync(int id);
     Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(int memberId);
 }

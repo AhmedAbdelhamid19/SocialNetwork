@@ -12,11 +12,10 @@ public class Seed
 {
     public static async Task SeedUsers(AppDbContext context)
     {
-
         // check if any users in the database
         if (await context.Users.AnyAsync()) return;
 
-        // read the json file
+        // read the json file as nullable string
         var membersString = await File.ReadAllTextAsync("Data/UserSeedData.json");
         // deserialize the json file
         var members = JsonSerializer.Deserialize<List<SeedUserDTO>>(membersString);

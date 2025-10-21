@@ -20,10 +20,13 @@ public class TokenService(IConfiguration config) : ITokenService
             new(ClaimTypes.Email, user.Email)
         };
 
+        // key for the token
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["PrivateKey"] ?? 
             throw new InvalidOperationException("JWT private key is not configured (PrivateKey).")));
+        // credential include algorithm and key
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        // include all requires for the token (claims, (key, algorithm), expire date ....)
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -31,6 +34,7 @@ public class TokenService(IConfiguration config) : ITokenService
             SigningCredentials = credentials
         };
 
+        // token handler is that create and write the jwt string
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);

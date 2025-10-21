@@ -4,6 +4,9 @@ using System.Text.Json;
 using API.Errors;
 
 namespace API.Middleware;
+// Instead of letting ASP.NET crash and show ugly error pages, 
+// you control the error format and always respond with clean JSON.
+// type this in program.cs to add this middleware: app.UseMiddleware<ExceptionMiddleware>();
 
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware>logger, IHostEnvironment env)
 {

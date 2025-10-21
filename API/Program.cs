@@ -19,15 +19,17 @@ builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 
 builder.Services
     .AddAuthentication(options => {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // to auth
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // to resoponse 401 unauthorized
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // to use JWT bearer authentication to check if the user is logged in.
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // If authentication fails, respond with 401 Unauthorized using JWT rules
     })
     .AddJwtBearer(options =>
     {
-        options.SaveToken = true;
+        // save in httpcontext, usefull if you will use it later in the pipeline to access it directly (HttpContext.GetTokenAsync(...))
+        options.SaveToken = true; 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true,
+            // to validate that the token wasn't changes (important if there's role claim may changes from user to admin)
+            ValidateIssuerSigningKey = true, 
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["PrivateKey"] ?? 
                 throw new InvalidOperationException("JWT private key is not configured (PrivateKey)."))),
             ValidateIssuer = false, // if true you need to set validIssuer
@@ -42,7 +44,6 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod();
-
     });
 });
 var app = builder.Build();
