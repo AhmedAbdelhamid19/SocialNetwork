@@ -33,6 +33,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
           case 500:
             const navigationExtras: NavigationExtras = {state: {error: error.error}};
+            // you can use extras only in the constructor of the target component
             router.navigateByUrl('/server-error', navigationExtras);
             break;
           default:

@@ -3,7 +3,7 @@ import { AccountService } from '../services/account-service';
 import { inject } from '@angular/core';
 import { ToastService } from '../services/toast-service';
 
-export const exauthGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = () => {
   const accountService = inject(AccountService);
   const toast = inject(ToastService);
   

@@ -18,7 +18,6 @@ export class TestErrors {
       error: error => console.log(error)
     })
   }
-
   get400Error() {
     this.http.get(this.baseUrl + "bug/bad-request").subscribe ({
       next: response => console.log(response),
@@ -40,7 +39,6 @@ export class TestErrors {
       error: error => console.log(error)
     })
   }
-
   get401Error() {
     this.http.get(this.baseUrl + "bug/auth").subscribe ({
       next: response => console.log(response),
