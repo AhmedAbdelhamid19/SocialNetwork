@@ -4,7 +4,7 @@
 
         <div class="card-actions z-50 absolute bottom-0 w-full px-3 py-1 rounded-b-lg bg-gradient-to-t from-black via-black/50 to-black/0">
             <div class="flex flex-col text-white">
-                <span class="font-semibold">{{member.displayName}}</span>
+                <span class="font-semibold">{{member.displayName}} {{member.dateOfBirth | age}}</span>
                 <span class="text-sm">{{member.city}}</span>
             </div>
         </div>
