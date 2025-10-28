@@ -11,6 +11,7 @@ import { ServerError } from '../shared/errors/server-error/server-error';
 import { MemberProfile } from '../features/members/member-profile/member-profile';
 import { MemberPhotos } from '../features/members/member-photos/member-photos';
 import { MemberMessages } from '../features/members/member-messages/member-messages';
+import { memberResolver } from '../features/members/member-resolver';
 
 export const routes: Routes = [
     {path: '', component: Home},
@@ -21,6 +22,8 @@ export const routes: Routes = [
             {path: 'members', component: MemeberList, canActivate: [authGuard]},
             {
                 path: 'members/:id', 
+                resolve: {member: memberResolver}, // named member of the data returned by the resolver memberResolver
+                runGuardsAndResolvers: 'always',
                 component: MemberDetailed,
                 canActivate: [authGuard],
                 children: [

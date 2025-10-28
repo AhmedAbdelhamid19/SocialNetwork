@@ -1,4 +1,4 @@
-@if (member$ | async; as member) {
+@if (member(); as member) {
     <div class="flex gap-6">
         <div class="card bg-base-100 flex flex-col h-[85vh] w-1/4">
             <img src="{{member.imageUrl || '/user.png'}}" alt="Member Image" class="rounded-t-lg mx-10 m-3" />

@@ -1,13 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
-import { MemberService } from '../../../core/services/member-service';
+import { Component, inject, Signal, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { Member } from '../../../types/member';
-import { AsyncPipe } from '@angular/common';
+
 
 @Component({
   selector: 'app-member-detailed',
-  imports: [AsyncPipe, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './member-detailed.html',
   styleUrl: './member-detailed.css'
 })
@@ -20,14 +19,17 @@ import { AsyncPipe } from '@angular/common';
 */
 
 export class MemberDetailed {
-  private memberService = inject(MemberService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  protected member$?: Observable<Member | null>;
+  protected member = signal<Member | undefined>(undefined);
   protected title = signal<string | undefined>('Profile');
  
   ngOnInit() {
-    this.member$ = this.loadMemeber();
+    this.route.data.subscribe({
+      next: (data) => {
+        this.member.set(data['member']);
+      }
+    });
     this.title.set(this.route.firstChild?.snapshot?.title);
 
     // you subscribe to router events to update the title when the child route changes
@@ -39,13 +41,5 @@ export class MemberDetailed {
     ).subscribe(() => {
       this.title.set(this.route.firstChild?.snapshot?.title);
     });
-  }
-
-  loadMemeber() {
-    // read the id from the route params and make query to get the member details
-    // from member service
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) return;
-    return this.memberService.getMember(id);
   }
 }
