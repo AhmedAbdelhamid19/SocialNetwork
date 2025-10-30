@@ -24,7 +24,6 @@ import { MemberService } from '../../../core/services/member-service';
 export class MemberDetailed {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  protected member = signal<Member | undefined>(undefined);
   protected title = signal<string | undefined>('Profile');
   private accountService = inject(AccountService);
   protected memberService = inject(MemberService);
@@ -33,11 +32,6 @@ export class MemberDetailed {
   });
 
   ngOnInit() {
-    this.route.data.subscribe({
-      next: (data) => {
-        this.member.set(data['member']);
-      }
-    });
     this.title.set(this.route.firstChild?.snapshot?.title);
 
     // you subscribe to router events to update the title when the child route changes

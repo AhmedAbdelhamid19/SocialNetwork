@@ -46,4 +46,7 @@ export class Nav implements OnInit {
     this.accountService.logout();
     this.router.navigateByUrl('/');
   }
+  closeDropdown(event: Event) {
+    (event.target as HTMLElement).blur();
+  }
 }

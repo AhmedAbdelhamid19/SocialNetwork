@@ -9,4 +9,5 @@ public interface IMemberRepository
     void Update(Member member);
     Task<bool> SaveAllAsync();
     Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(int memberId);
+    Task<Member?> GetMemberForUpdate(int id);
 }

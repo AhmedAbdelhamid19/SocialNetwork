@@ -45,7 +45,7 @@
                     <span class="text-sm">{{user.displayName}}</span>
                 </div>
                 <ul tabindex="0" class="dropdown-content dropdown-end menu bg-base-100 rounded-box z-50 w-52 shadow-lg">
-                  <li><a routerLink="/members/{{user.id}}">Edit Profile</a></li>
+                  <li><a (click)="closeDropdown($event)" routerLink="/members/{{user.id}}">Edit Profile</a></li>
                   <li><a (click)="logout()">Logout</a></li>
                 </ul>
             </div>

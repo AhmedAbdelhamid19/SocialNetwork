@@ -10,7 +10,12 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
     {
         return await context.Members.FindAsync(id);
     }
-    
+
+    public async Task<Member?> GetMemberForUpdate(int id)
+    {
+        return await context.Members.Include(m => m.User).SingleOrDefaultAsync(m => m.Id == id);
+    }
+
     public async Task<IReadOnlyList<Member>> GetMembersAsync()
     {
         // read only to avoid updated it (update only with Update)
