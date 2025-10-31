@@ -14,9 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// this means that you can get the values of cloudinary settings from appsettings.json file when you inject IOptions<CloudinarySettings>
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloundinarySettings")); // typo in "CloundinarySettings" is intentional to match appsettings.json
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 builder.Services
     .AddAuthentication(options => {
