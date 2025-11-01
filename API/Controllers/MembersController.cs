@@ -62,7 +62,7 @@ namespace API.Controllers
             if (await memberRepository.SaveAllAsync()) return NoContent();
             return BadRequest("Faild to update member");
         }
-    
+
         [HttpPost("add-photo")]
         public async Task<ActionResult<Photo>> AddPhoto([FromForm] IFormFile file)
         {
@@ -111,6 +111,27 @@ namespace API.Controllers
             }
 
             return BadRequest("Problem adding photo");
+        }
+        [HttpPut("set-main-photo/{photoId}")]
+        public async Task<ActionResult> SetMainPhoto(int photoId)
+        {
+            var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (memberId == null) return BadRequest("no id found in token");
+
+            var member = await memberRepository.GetMemberByIdAsync(int.Parse(memberId));
+            if (member == null) return BadRequest("Member doesn't exist");
+
+            var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);
+            if (photo == null) return NotFound("Photo not found");
+
+            if (photo.Url == member.ImageUrl) return BadRequest("This is already your main photo");
+
+            member.ImageUrl = photo.Url;
+            member.User.ImageUrl = photo.Url;
+
+            if (await memberRepository.SaveAllAsync()) return NoContent();
+
+            return BadRequest("Failed to set main photo, try again");
         }
     }
 }

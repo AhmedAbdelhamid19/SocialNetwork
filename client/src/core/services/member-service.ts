@@ -29,4 +29,11 @@ export class MemberService {
   updateMember(member: EditMember) {
      return this.http.put(this.baseUrl + `members/update`, member);
   }
+  uploadPhoto(file: File) {
+    // must be FormData to send file to backend because it expects multipart/form-data 
+    const formData = new FormData(); 
+    // must be 'file' because the backend expects it
+    formData.append('file', file);
+    return this.http.post<Photo>(this.baseUrl + 'members/add-photo', formData);
+  }
 }
