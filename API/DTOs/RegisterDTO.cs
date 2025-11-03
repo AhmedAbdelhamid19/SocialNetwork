@@ -12,8 +12,25 @@ public class RegisterDTO
     [EmailAddress(ErrorMessage = "Invalid email format")]
     [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
     public string Email { get; set; } = "";
+    
 
     [Required(ErrorMessage = "Password is required")]
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters")]
     public string Password { get; set; } = "";
+
+
+    [Required]
+    public string Gender { get; set; } = string.Empty;
+
+
+    [Required]
+    public string City { get; set; } = string.Empty;
+
+
+    [Required]
+    public string Country { get; set; } = string.Empty;
+
+
+    [Required]
+    public DateOnly DateOfBirth { get; set; }
 }

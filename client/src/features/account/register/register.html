@@ -1,15 +1,46 @@
 <div class="card bg-base-100 w-1/2 mx-auto flex flex-col p-9 rounded-lg shadow-lg">
     <div class="card-title justify-center text-3xl text-primary">Sign up</div>
-    <div class="card-body w-full">
-        <form #registerForm="ngForm" class="flex flex-col gap-4 w-full" (ngSubmit)="register()">
-            <input type="text" class="input w-full" name="email" [(ngModel)]="creds.email" placeholder="Email">
-            <input type="text" class="input w-full" name="displayName" [(ngModel)]="creds.displayName" placeholder="Name">
-            <input type="password" class="input w-full" name="password" [(ngModel)]="creds.password" placeholder="Password">
 
-            <div class="flex items-center justify-end gap-3">
-                <button class="btn" type="button" (click)="cancel()">Cancel</button>
-                <button class="btn btn-primary" type="submit">Register</button>
-            </div>
-        </form>
+    <ul class="steps">
+        <li class="step" [class.step-primary]="currentStep() === 1 || currentStep() > 1">Credentials</li>
+        <li class="step" [class.step-primary]="currentStep() === 2 || currentStep() > 2">Profile</li>
+    </ul>
+    <div class="card-body w-full">
+        @if(currentStep() === 1) {
+            <form [formGroup]="credentialForm" class="flex flex-col gap-4 m1 p-2 w-full steps">
+                <app-text-input label="Email" formControlName="email"/>
+                <app-text-input label="Display name" formControlName="displayName"/>
+                <app-text-input label="Password" type="password" formControlName="password"/>
+                <app-text-input label="Confirm password" type="password" formControlName="confirmPassword"/>
+
+                <div class="flex items-center justify-end gap-3">
+                    <button class="btn" type="button" (click)="cancel()">Cancel</button>
+                    <button class="btn btn-primary" type="button" (click)="nextStep()" [disabled]="credentialForm.invalid">Next</button>
+                </div> 
+            </form>
+        }
+        @if(currentStep() === 2) {
+            <form [formGroup]="profileForm" class="flex flex-col gap-4 m-1 p-2 w-full steps" (ngSubmit)="register()">
+                <div class="flex item-center gap-4 mb-1">
+                    <div class="font-semibold">Gender: </div>
+                    <label class="cursor-pointer flex items-center gap-1">
+                        <input type="radio" class="radio radio-primary" formControlName="gender" value="male" />
+                        <div>male</div>
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-1">
+                        <input type="radio" class="radio radio-primary" formControlName="gender" value="female" />
+                        <div>female</div>
+                    </label>
+                </div>
+                <app-text-input label="Date of Birth" type="date" formControlName="dateOfBirth"/>
+                <app-text-input label="City" formControlName="city"/>
+                <app-text-input label="Country" formControlName="country"/>
+
+                <div class="flex items-center justify-end gap-3">
+                    <button class="btn" type="button" (click)="previousStep()">Back</button>
+                    <button class="btn btn-primary" type="submit" [disabled]="profileForm.invalid">Register</button>
+                </div> 
+            </form>
+        }
     </div>
 </div>

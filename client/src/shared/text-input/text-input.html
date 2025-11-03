@@ -1,0 +1,25 @@
+<label class="floating-label text-left">
+    <span>{{label()}}</span>
+    <!-- 
+        type & placeholder: binded from ts file.
+        class.input-error: applies error styling when the control is invalid and has been touched like making red color.
+        class.input-success: applies success styling when the control is valid and has been touched.
+        formControl: This is the key binding. It links this input element to the reactive form control instance managed by Angular, so you link the input field to this component control.
+     -->
+    <input class="input w-full" [type]="type()" [placeholder]="label()" [class.input-error]="control.invalid && control.touched" [class.input-success]="control.valid && control.touched" [formControl]="control">
+    @if(control.hasError('required') && control.touched) {
+        <div class="text-error text-xs mt-1 ml-1">This field is required.</div>
+    }
+    @if(control.hasError('email') && control.touched) {
+        <div class="text-error text-xs mt-1 ml-1">Invalid email address</div>
+    }
+    @if(control.hasError('minlength') && control.touched) {
+        <div class="text-error text-xs mt-1 ml-1">{{label()}} must be at least {{control.errors?.["minlength"].requiredLength}} characters</div>
+    }
+    @if(control.hasError('maxlength') && control.touched) {
+        <div class="text-error text-xs mt-1 ml-1">{{label()}} must be at most {{control.errors?.["maxlength"].requiredLength}} characters</div>
+    }
+    @if(control.hasError('notMatching') && control.touched) {
+        <div class="text-error text-xs mt-1 ml-1"> fields must be matched</div>
+    }
+</label>
