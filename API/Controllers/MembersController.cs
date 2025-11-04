@@ -17,9 +17,15 @@ namespace API.Controllers
     public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : ControllerBase
     {   
         [HttpGet("GetUsers")]
-        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers([FromQuery]PagingParams pagingParams)
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers([FromQuery]MemberParams memberParams)
         {
-            var users = await memberRepository.GetMembersAsync(pagingParams);
+            if(memberParams.CurrentMemberId == null)
+            {
+                var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (memberId == null) return BadRequest("no id found in token");
+                memberParams.CurrentMemberId = int.Parse(memberId);
+            }
+            var users = await memberRepository.GetMembersAsync(memberParams);
             return Ok(users);
         }
 

@@ -20,11 +20,26 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         return await context.Members.Include(m => m.User).Include(m => m.Photos).SingleOrDefaultAsync(m => m.Id == id);
     }
 
-    public async Task<PaginatedResult<Member>> GetMembersAsync(PagingParams pagingParams)
+    public async Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberParams)
     {
+        /* 
+            if you want to add more filters
+            1. add property to MemberParams (nullable if optional)
+            2. add filtering logic here (if statements, where clauses on the query)
+        */
         var query = context.Members.AsQueryable();
-        return await PaginationHelper.CreateAsync(query, pagingParams.PageNumber, pagingParams.PageSize);
-     }
+        query = query.Where(m => m.Id != memberParams.CurrentMemberId);
+        if (memberParams.Gender != null)
+        {
+            query = query.Where(m => m.Gender == memberParams.Gender);
+        }
+        
+        var minDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MaxAge - 1));
+        var maxDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
+
+        query = query.Where(m => m.DateOfBirth >= minDateOfBirth && m.DateOfBirth <= maxDateOfBirth);
+        return await PaginationHelper.CreateAsync(query, memberParams.PageNumber, memberParams.PageSize);
+    }
 
     public async Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(int memberId)
     {
