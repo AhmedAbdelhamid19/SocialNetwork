@@ -1,33 +1,27 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MemberService } from '../../../core/services/member-service';
-import { Observable } from 'rxjs';
-import { Member } from '../../../types/member';
-import { AsyncPipe } from '@angular/common';
+import { Member, MemberParams } from '../../../types/member';
 import { MemberCard } from '../member-card/member-card';
 import { PaginatedResult } from '../../../types/pagination';
 import { Paginator } from "../../../shared/paginator/paginator";
 
 @Component({
   selector: 'app-memeber-list',
-  imports: [AsyncPipe, MemberCard, Paginator],
+  imports: [MemberCard, Paginator],
   templateUrl: './memeber-list.html',
   styleUrl: './memeber-list.css'
 })
 export class MemeberList implements OnInit {
-onPageChange(arg0: any) {
-throw new Error('Method not implemented.');
-}
   private memberService = inject(MemberService);
   protected paginatedMembers = signal<PaginatedResult<Member> | null>(null);
-  pageNumber = 1;
-  pageSize = 5;
+  protected memberParams = new MemberParams();
 
   ngOnInit(): void {
     this.loadMembers();
   }
   
   loadMembers() {
-    this.memberService.getMembers(this.pageNumber, this.pageSize).subscribe({
+    this.memberService.getMembers(this.memberParams).subscribe({
       next: (members) => {
         this.paginatedMembers.set(members);
       },
@@ -36,9 +30,10 @@ throw new Error('Method not implemented.');
       }
     });
   }
-  onPageChanged(event: { pageNumber: number; pageSize: number; }) {
-    this.pageNumber = event.pageNumber;
-    this.pageSize = event.pageSize;
+  onPageChanged(event: { pageNumber: number, pageSize: number; }) {
+    // event is output parameter from paginator component
+    this.memberParams.pageNumber = event.pageNumber;
+    this.memberParams.pageSize = event.pageSize;
     this.loadMembers();
   }
 }

@@ -24,3 +24,11 @@ export type EditMember = {
   city: string
   country: string
 }
+
+export class MemberParams {
+  gender?: string;
+  minAge  = 18;
+  maxAge = 100;
+  pageSize = 1;
+  pageNumber = 10;
+}
