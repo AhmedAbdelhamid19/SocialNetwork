@@ -1,8 +1,9 @@
-import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHandler, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { EditMember, Member, Photo } from '../../types/member'; 
 import { tap } from 'rxjs';
+import { PaginatedResult } from '../../types/pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,12 @@ export class MemberService {
   editMode = signal(false);
   member = signal<Member | null>(null);
 
-  getMembers() {
-    return this.http.get<Member []> (this.baseUrl + 'members/GetUsers');
+  getMembers(pageNumber = 1, pageSize = 5) {
+    let params = new HttpParams();
+    params = params.append('pageNumber', pageNumber.toString());
+    params = params.append('pageSize', pageSize.toString());
+
+    return this.http.get<PaginatedResult<Member>> (this.baseUrl + 'members/GetUsers', {params});
   }
   getMember(id: string) {
     return this.http.get<Member>(this.baseUrl + 'members/GetUser/' + id).pipe(

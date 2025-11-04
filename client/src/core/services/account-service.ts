@@ -35,6 +35,10 @@ export class AccountService {
     this.currentUser.set(null);
   }
   setCurrentUser(user: User) {
+    // Temporary debug log to verify image URL
+    console.log('Setting current user with image:', user);
+    console.log('Setting current user with image:', user?.imageUrl);
+    console.log('Setting current user with image:', user?.displayName);
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
   }

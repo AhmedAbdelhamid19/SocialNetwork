@@ -13,16 +13,16 @@ const cache = new Map<string, HttpEvent<unknown>>();
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const busyService = inject(BusyService);
 
-  if (req.method === 'GET') {
-    const cached = cache.get(req.url);
-    if (cached) {
-        return of(cached); // return cached result instantly
-    }
-  }
+  // if (req.method === 'GET') {
+  //   const cached = cache.get(req.url);
+  //   if (cached) {
+  //       return of(cached); // return cached result instantly
+  //   }
+  // }
 
   busyService.busy();
   return next(req).pipe(
-    delay(500),
+    delay(100),
     tap(response => {
        cache.set(req.url, response)
     }),

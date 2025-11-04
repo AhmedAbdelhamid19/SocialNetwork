@@ -9,7 +9,7 @@ import { User } from '../../types/user';
   styleUrl: './home.css'
 })
 export class Home {
-  protected registerMode = signal(false);
+  protected registerMode = signal(true );
 
   showRegister(value : boolean) {
     this.registerMode.set(value);

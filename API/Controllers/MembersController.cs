@@ -7,6 +7,7 @@ using API.Interfaces;
 using API.DTOs;
 using System.Security.Claims;
 using System.Globalization;
+using API.Helpers;
 
 namespace API.Controllers
 {        
@@ -16,9 +17,9 @@ namespace API.Controllers
     public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : ControllerBase
     {   
         [HttpGet("GetUsers")]
-        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers([FromQuery]PagingParams pagingParams)
         {
-            var users = await memberRepository.GetMembersAsync();
+            var users = await memberRepository.GetMembersAsync(pagingParams);
             return Ok(users);
         }
 
@@ -83,12 +84,6 @@ namespace API.Controllers
                 PublicId = result.PublicId,
                 MemberId = member.Id
             };
-
-            if (member.ImageUrl == null)
-            {
-                member.ImageUrl = photo.Url;
-                member.User.ImageUrl = photo.Url;
-            }
 
             member.Photos.Add(photo);
 
