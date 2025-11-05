@@ -33,6 +33,14 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         {
             query = query.Where(m => m.Gender == memberParams.Gender);
         }
+
+        // switch statement requires C# 8.0 or later, if order by = "created" order by created else order by last active
+        // The ordering happens first on all the data in the query, and then pagination (Skip/Take) is applied to that ordered set, so take care.
+        query = memberParams.OrderBy switch
+        {
+            "created" => query.OrderByDescending(m => m.Created),
+            _ => query.OrderByDescending(m => m.LastActive)
+        };
         
         var minDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MaxAge - 1));
         var maxDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
