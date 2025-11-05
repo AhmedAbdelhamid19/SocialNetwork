@@ -14,7 +14,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(AppDbContext context, ITokenService tokenService) : ControllerBase
+    public class AccountController(AppDbContext context, ITokenService tokenService) : BaseApiController
     {
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO register) 

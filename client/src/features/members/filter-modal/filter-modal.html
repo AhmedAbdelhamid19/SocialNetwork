@@ -14,7 +14,6 @@
                 </select>
             </div>
             <!-- Age Range -->
-            <span class="text-red-500 text-sm mt-1"></span>
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-control w-full">
                     <label class="label">
@@ -28,6 +27,16 @@
                     </label>
                     <input type="number" class="input input-bordered w-full" (change)="onMaxAgeChange()" [(ngModel)]="filterParams.maxAge"min="18" max="100">
                 </div>
+            </div>
+            <!-- Order By -->
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text">Order By</span>
+                </label>
+                <select class="select select-bordered w-full" [(ngModel)]="filterParams.orderBy">
+                    <option value="lastActive">Last Active</option>
+                    <option value="created">Created</option>
+                </select>
             </div>
         </div>
 

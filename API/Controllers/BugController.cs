@@ -6,7 +6,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BugController : ControllerBase
+    public class BugController : BaseApiController
     {
         [HttpGet("auth")] 
         public IActionResult GetAuth() 

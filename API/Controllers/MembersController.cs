@@ -14,7 +14,7 @@ namespace API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : ControllerBase
+    public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : BaseApiController
     {   
         [HttpGet("GetUsers")]
         public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers([FromQuery]MemberParams memberParams)
