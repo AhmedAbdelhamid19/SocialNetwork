@@ -1,18 +1,32 @@
 @if(paginatedMembers(); as paginatedResult) {
-    @if (paginatedResult.metadata; as metadata) {
-        <app-paginator 
-            [pageNumber]="metadata.currentPage"
-            [totalCount]="metadata.totalCount" 
-            [pageSize]="metadata.pageSize" 
-            [totalPages]="metadata.totalPages"
-            (pageChange)="onPageChanged($event)"
-        />
-     }
-    @if(paginatedResult.items; as currentMembers) {
-        <div class="grid grid-cols-5 gap-6">
-            @for (member of currentMembers; track member.id) {
-                <app-member-card [member]="member"/>
-            }
+    <div class="flex flex-col w-full">
+        <div class="flex justify-between items-center">
+            <!-- to make filters in the left and pagination in the right -->
+            <div class="flex  gap-3">
+                <!-- when you click Select filter it will call openModal Function to show component at the end -->
+                 <button (click)="openModal()" class="btn btn-primary">Select Filters</button>
+                 <button (click)="resetFilters()" class="btn btn-neutral">Reset Filters</button>
+            </div>
+            @if (paginatedResult.metadata; as metadata) {
+                <app-paginator 
+                    [pageNumber]="metadata.currentPage"
+                    [totalCount]="metadata.totalCount" 
+                    [pageSize]="metadata.pageSize" 
+                    [totalPages]="metadata.totalPages"
+                    (pageChange)="onPageChanged($event)"
+                />
+             }
         </div>
-    } 
+        @if(paginatedResult.items; as currentMembers) {
+            <div class="grid grid-cols-5 gap-6">
+                @for (member of currentMembers; track member.id) {
+                    <app-member-card [member]="member"/>
+                }
+            </div>
+        } 
+    </div>
 }
+
+<!-- you make template reference variable to controll it inside typescript file throw ViewChild -->
+<!-- hidden here if you don't have any members-->
+<app-filter-modal #filterModal [hidden]="!paginatedMembers()" (closeModel)="closeModal()" (submitData)="onFilterChanged($event)"/>
