@@ -2,11 +2,11 @@
 	<div class="flex flex-col gap-3">
         <div class="flex gap-3">
             <span class="font-semibold">Member since: </span>
-            <span>{{member.created | date: 'longDate'}}</span>
+            <span>{{member.created + 'z' | timeAgo}}</span>
         </div>
         <div class="flex gap-3">
-            <span class="font-semibold">Member since: </span>
-            <span>{{member.lastActive | date: 'dd MMM yyyy h:mm a'}}</span>
+            <span class="font-semibold">Last Active: </span>
+            <span>{{member.lastActive + 'z' | timeAgo}}</span>
         </div>
         @if(memberService.editMode()) {
             <div class="divider"></div>
