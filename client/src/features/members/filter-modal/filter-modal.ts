@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, output, ViewChild} from '@angular/core';
+import { Component, ElementRef, input, model, OnInit, output, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MemberParams } from '../../../types/member';
 
@@ -21,13 +21,13 @@ export class FilterModal implements OnInit {
  @ViewChild('filterModal') modelRef!: ElementRef<HTMLDialogElement>;
  closeModel = output();
  submitData = output<MemberParams>();
- filterParams = new MemberParams();
+ filterParams = model<MemberParams>(new MemberParams());
  ageError = '';
  
   ngOnInit(): void {
     const filters = localStorage.getItem('filters');
     if (filters) {
-      this.filterParams = JSON.parse(filters);
+      this.filterParams.set(JSON.parse(filters));
     }
   }
   /*
@@ -44,23 +44,23 @@ export class FilterModal implements OnInit {
   }
 
   submitModal() {
-    this.submitData.emit(this.filterParams);
+    this.submitData.emit(this.filterParams());
     this.closeModal(); // close the modal after submitting
   }
   onMinAgeChange() {
-    if (this.filterParams.minAge > this.filterParams.maxAge) {
-      this.filterParams.minAge = this.filterParams.maxAge;
+    if (this.filterParams().minAge > this.filterParams().maxAge) {
+      this.filterParams().minAge = this.filterParams().maxAge;
     }
-    if(this.filterParams.minAge<18) {
-      this.filterParams.minAge=18;
+    if(this.filterParams().minAge<18) {
+      this.filterParams().minAge=18;
     }
   }
   onMaxAgeChange() {
-    if (this.filterParams.maxAge < this.filterParams.minAge) {
-      this.filterParams.maxAge = this.filterParams.minAge;
+    if (this.filterParams().maxAge < this.filterParams().minAge) {
+      this.filterParams().maxAge = this.filterParams().minAge;
     }
-    if(this.filterParams.maxAge>100) {
-      this.filterParams.maxAge=100;
+    if(this.filterParams().maxAge>100) {
+      this.filterParams().maxAge=100;
     }
   }
 }

@@ -9,7 +9,7 @@ import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 
 @Component({
   selector: 'app-member-profile',
-  imports: [DatePipe, FormsModule, TimeAgoPipe],
+  imports: [FormsModule, TimeAgoPipe],
   templateUrl: './member-profile.html',
   styleUrl: './member-profile.css'
 })
