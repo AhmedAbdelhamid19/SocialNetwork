@@ -20,7 +20,12 @@ export class MemeberList implements OnInit {
   protected paginatedMembers = signal<PaginatedResult<Member> | null>(null);
   protected memberParams = new MemberParams();
 
+
   ngOnInit(): void {
+    const filters = localStorage.getItem('filters');
+    if (filters) {
+      this.memberParams = JSON.parse(filters);
+    }
     this.loadMembers();
   }
   
