@@ -10,4 +10,25 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<AppUser> Users { get; set; }
     public DbSet<Member> Members { get; set; }
     public DbSet<Photo> Photos { get; set; }
+    public DbSet<MemberFollow> Follows { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<MemberFollow>()
+            .HasKey(k => new { k.SourceMemberId, k.TargetMemberId });
+
+        builder.Entity<MemberFollow>()
+            .HasOne(s => s.SourceMember)
+            .WithMany(m => m.Following)
+            .HasForeignKey(s => s.SourceMemberId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<MemberFollow>()
+            .HasOne(s => s.TargetMember)
+            .WithMany(m => m.Followers)
+            .HasForeignKey(s => s.TargetMemberId)
+            .OnDelete(DeleteBehavior.NoAction );
+    }
 }

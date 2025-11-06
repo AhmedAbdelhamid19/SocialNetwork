@@ -18,6 +18,10 @@ public class Member
 
     [JsonIgnore]
     public ICollection<Photo> Photos { get; set; } = [];
+    [JsonIgnore]
+    public List<MemberFollow> Following { get; set; } = [];
+    [JsonIgnore]
+    public List<MemberFollow> Followers { get; set; } = [];
 
     [JsonIgnore]
     // Navigation Property
