@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MemberService } from '../../../core/services/member-service';
+import { FollowService } from '../../../core/services/follow-service';
 import { Member, MemberParams } from '../../../types/member';
 import { MemberCard } from '../member-card/member-card';
 import { PaginatedResult } from '../../../types/pagination';
@@ -17,6 +18,7 @@ export class MemeberList implements OnInit {
   // so you can control it (open/close functions inside the child component) from this parent component.
   @ViewChild('filterModal') modal!: FilterModal;
   private memberService = inject(MemberService);
+  private followService = inject(FollowService);
   protected paginatedMembers = signal<PaginatedResult<Member> | null>(null);
   protected memberParams = new MemberParams();
 
@@ -26,7 +28,18 @@ export class MemeberList implements OnInit {
     if (filters) {
       this.memberParams = JSON.parse(filters);
     }
-    this.loadMembers();
+    // load followee ids so each member-card can correctly compute follow status
+    this.followService.getFolloweesIds().subscribe({
+      next: () => {
+        // proceed to load members after we have the follow ids
+        this.loadMembers();
+      },
+      error: (err) => {
+        console.error('Failed to load followee ids:', err);
+        // still load members even if follow ids fail
+        this.loadMembers();
+      }
+    });
   }
   
   loadMembers() {

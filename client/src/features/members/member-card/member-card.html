@@ -10,3 +10,10 @@
         </div>
     </div>
 }
+<button class="btn btn-primary w-full" (click)="toggleFollow()">
+    @if(isFollowee()) {
+        Unfollow
+    } @else {
+        Follow
+    }
+</button>
