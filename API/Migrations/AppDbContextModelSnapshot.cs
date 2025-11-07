@@ -95,6 +95,21 @@ namespace API.Migrations
                     b.ToTable("Members");
                 });
 
+            modelBuilder.Entity("API.Entities.MemberFollow", b =>
+                {
+                    b.Property<int>("SourceMemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetMemberId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SourceMemberId", "TargetMemberId");
+
+                    b.HasIndex("TargetMemberId");
+
+                    b.ToTable("Follows");
+                });
+
             modelBuilder.Entity("API.Entities.Photo", b =>
                 {
                     b.Property<int>("Id")
@@ -131,6 +146,25 @@ namespace API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("API.Entities.MemberFollow", b =>
+                {
+                    b.HasOne("API.Entities.Member", "SourceMember")
+                        .WithMany("Following")
+                        .HasForeignKey("SourceMemberId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Member", "TargetMember")
+                        .WithMany("Followers")
+                        .HasForeignKey("TargetMemberId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("SourceMember");
+
+                    b.Navigation("TargetMember");
+                });
+
             modelBuilder.Entity("API.Entities.Photo", b =>
                 {
                     b.HasOne("API.Entities.Member", "Member")
@@ -150,6 +184,10 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Member", b =>
                 {
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
+
                     b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
