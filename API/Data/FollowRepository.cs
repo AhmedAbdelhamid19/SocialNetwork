@@ -8,31 +8,31 @@ namespace API.Data;
 
 public class FollowRepository(AppDbContext context) : IFollowRepository
 {
-    public async Task<MemberFollow?> GetMemberFollowAsync(int sourceUserId, int targetUserId)
+    public async Task<MemberFollow?> GetFollowAsync(int sourceUserId, int targetUserId)
     {
         return await context.Follows
             .FirstOrDefaultAsync(f => f.SourceMemberId == sourceUserId && f.TargetMemberId == targetUserId);
     }
 
-    public async Task<IReadOnlyList<Member>> GetMemberFollowsAsync(int userId, string predicate)
+    public async Task<IReadOnlyList<int>> GetAllFollowsIdsAsync(int userId, string predicate)
     {
         return predicate switch
         {
             "followees" => await context.Follows
                 .Where(f => f.SourceMemberId == userId)
-                .Select(f => f.TargetMember)
+                .Select(f => f.TargetMemberId)
                 .ToListAsync(),
 
             "followers" => await context.Follows
                 .Where(f => f.TargetMemberId == userId)
-                .Select(f => f.SourceMember)
+                .Select(f => f.SourceMemberId)
                 .ToListAsync(),
 
             _ => throw new ArgumentException("Invalid predicate", nameof(predicate))
         };
     }
 
-    public async Task<IReadOnlyList<int>> GetCurrentMemberFolloweesAsync(int userId)
+    public async Task<IReadOnlyList<int>> GetMemberFolloweesAsync(int userId)
     {
         return await context.Follows
             .Where(f => f.SourceMemberId == userId)
@@ -40,7 +40,7 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<int>> GetCurrentMemberFollowersAsync(int userId)
+    public async Task<IReadOnlyList<int>> GetMemberFollowersAsync(int userId)
     {
         return await context.Follows
             .Where(f => f.TargetMemberId == userId)
@@ -48,12 +48,12 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
             .ToListAsync();
     }
 
-    public void RemoveMemberFollow(MemberFollow memberFollow)
+    public void RemoveFollow(MemberFollow memberFollow)
     {
         context.Follows.Remove(memberFollow);
     }
     
-    public void AddMemberFollow(MemberFollow memberFollow)
+    public void AddFollow(MemberFollow memberFollow)
     {
         context.Follows.AddAsync(memberFollow);
     }
