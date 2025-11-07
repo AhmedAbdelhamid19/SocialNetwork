@@ -9,7 +9,7 @@ namespace API.Controllers
     [ApiController]
     public class FollowController(IFollowRepository followRepository) : BaseApiController
     {
-        [HttpPost("toggleFollow/{targetMemberId}")]
+        [HttpPost("toggle-Follow/{targetMemberId}")]
         public async Task<ActionResult> ToggleFollow(int targetMemberId)
         {
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -26,20 +26,20 @@ namespace API.Controllers
                 };
                 followRepository.AddFollow(newFollow);
                 if (await followRepository.SaveAllAsync())
-                    return Ok("Followed successfully");
+                    return Ok(new { message = "Followed successfully" });
                 return BadRequest("Failed to follow member");
             }
             else
             {
                 followRepository.RemoveFollow(existingFollow);
                 if (await followRepository.SaveAllAsync())
-                    return Ok("Unfollowed successfully");
+                    return Ok(new { message = "Unfollowed successfully" });
                 return BadRequest("Failed to unfollow member");
             }
         }
 
-        [HttpGet("Follows")]
-        public async Task<ActionResult> GetFollows([FromQuery] string predicate)
+        [HttpGet("Follows-Ids")]
+        public async Task<ActionResult> GetFollowsIds([FromQuery] string predicate)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null) return BadRequest("no id found in token");
@@ -48,6 +48,24 @@ namespace API.Controllers
             try
             {
                 var follows = await followRepository.GetAllFollowsIdsAsync(memberId, predicate);
+                return Ok(follows);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Follows-Members")]
+        public async Task<ActionResult> GetFollowsMembers([FromQuery] string predicate)
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (id == null) return BadRequest("no id found in token");
+            int memberId = int.Parse(id);
+
+            try
+            {
+                var follows = await followRepository.GetAllFollowsAsync(memberId, predicate);
                 return Ok(follows);
             }
             catch (ArgumentException ex)

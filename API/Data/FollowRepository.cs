@@ -32,22 +32,23 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
         };
     }
 
-    public async Task<IReadOnlyList<int>> GetMemberFolloweesAsync(int userId)
+    public async Task<IReadOnlyList<Member>> GetAllFollowsAsync(int userId, string predicate)
     {
-        return await context.Follows
-            .Where(f => f.SourceMemberId == userId)
-            .Select(f => f.TargetMemberId)
-            .ToListAsync();
-    }
+        return predicate switch
+        {
+            "followees" => await context.Follows
+                .Where(f => f.SourceMemberId == userId)
+                .Select(f => f.TargetMember)
+                .ToListAsync(),
 
-    public async Task<IReadOnlyList<int>> GetMemberFollowersAsync(int userId)
-    {
-        return await context.Follows
-            .Where(f => f.TargetMemberId == userId)
-            .Select(f => f.SourceMemberId)
-            .ToListAsync();
-    }
+            "followers" => await context.Follows
+                .Where(f => f.TargetMemberId == userId)
+                .Select(f => f.SourceMember)
+                .ToListAsync(),
 
+            _ => throw new ArgumentException("Invalid predicate", nameof(predicate))
+        };
+    }
     public void RemoveFollow(MemberFollow memberFollow)
     {
         context.Follows.Remove(memberFollow);
