@@ -18,7 +18,7 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
     {
         return predicate switch
         {
-            "followees" => await context.Follows
+            "following" => await context.Follows
                 .Where(f => f.SourceMemberId == userId)
                 .Select(f => f.TargetMemberId)
                 .ToListAsync(),
@@ -36,7 +36,7 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
     {
         return predicate switch
         {
-            "followees" => await context.Follows
+            "following" => await context.Follows
                 .Where(f => f.SourceMemberId == userId)
                 .Select(f => f.TargetMember)
                 .ToListAsync(),

@@ -13,20 +13,20 @@ import { FollowService } from '../../../core/services/follow-service';
 export class MemberCard {
   private followService = inject(FollowService);
   member = input.required<Member>();
-  isFollowee = computed(() => {
-    return this.followService.followeesIds().includes(this.member().id);
+  isFollowing = computed(() => {
+    return this.followService.followingIds().includes(this.member().id);
   });
 
   toggleFollow() {
     this.followService.toggleFollow(this.member().id).subscribe({
       next: () => {
-        if (this.isFollowee()) {
-          this.followService.followeesIds.set(
-            this.followService.followeesIds().filter(id => id !== this.member().id)
+        if (this.isFollowing()) {
+          this.followService.followingIds.set(
+            this.followService.followingIds().filter(id => id !== this.member().id)
           );
         } else {
-          this.followService.followeesIds.set([
-            ...this.followService.followeesIds(),
+          this.followService.followingIds.set([
+            ...this.followService.followingIds(),
             this.member().id
           ]);
         }

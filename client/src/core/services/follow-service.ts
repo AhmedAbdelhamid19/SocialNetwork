@@ -11,7 +11,7 @@ export class FollowService {
   private baseUrl = environment.apiUrl;
   private http = inject (HttpClient);
   followersIds = signal<number[]>([]);
-  followeesIds = signal<number[]>([]);
+  followingIds = signal<number[]>([]);
 
   toggleFollow(targetMemberId: number) {
     return this.http.post(this.baseUrl + `follow/toggle-follow/${targetMemberId}`, {});
@@ -24,21 +24,21 @@ export class FollowService {
       })
     );
   }
-  getFolloweesIds() {
-    return this.http.get<number[]>(this.baseUrl + `follow/follows-ids?predicate=followees`).pipe(
+  getFollowingIds() {
+    return this.http.get<number[]>(this.baseUrl + `follow/follows-ids?predicate=following`).pipe(
       tap(ids => {
-        this.followeesIds.set(ids);
+        this.followingIds.set(ids);
       })
     );
   }
   getFollowers() {
     return this.http.get<Member[]>(this.baseUrl + `follow/follows-members?predicate=followers`);
   }
-  getFollowees() {
-    return this.http.get<Member[]>(this.baseUrl + `follow/follows-members?predicate=followees`);
+  getFollowing() {
+    return this.http.get<Member[]>(this.baseUrl + `follow/follows-members?predicate=following`);
   }
   clearFollows() {
     this.followersIds.set([]);
-    this.followeesIds.set([]);
+    this.followingIds.set([]);
   }
 }

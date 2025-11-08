@@ -28,14 +28,14 @@ export class MemeberList implements OnInit {
     if (filters) {
       this.memberParams = JSON.parse(filters);
     }
-    // load followee ids so each member-card can correctly compute follow status
-    this.followService.getFolloweesIds().subscribe({
+    // load following ids so each member-card can correctly compute follow status
+    this.followService.getFollowingIds().subscribe({
       next: () => {
         // proceed to load members after we have the follow ids
         this.loadMembers();
       },
       error: (err) => {
-        console.error('Failed to load followee ids:', err);
+        console.error('Failed to load following ids:', err);
         // still load members even if follow ids fail
         this.loadMembers();
       }

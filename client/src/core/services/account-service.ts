@@ -42,6 +42,6 @@ export class AccountService {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     this.followService.getFollowers();
-    this.followService.getFollowees();
+    this.followService.getFollowing();
   }
 }
