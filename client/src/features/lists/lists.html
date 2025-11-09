@@ -1,10 +1,10 @@
-<!-- name of each tab group should be unique -->
+ <!-- name of each tab group should be unique -->
 <div class="tabs tabs-lift ">
     <input type="radio" name="my_tabs_3" class="tab" aria-label="Followers" />
     <div class="tab-content bg-base-100 border-base-300 p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @for (member of followers(); track member.id) {
-                <app-member-card [member]="member" />
+                <app-member-card [member]="member" (followToggled)="onFollowToggled($event)" />
             }
         </div>
     </div>
@@ -13,7 +13,7 @@
     <div class="tab-content bg-base-100 border-base-300 p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @for (member of following(); track member.id) {
-                <app-member-card [member]="member" />
+                <app-member-card [member]="member" (followToggled)="onFollowToggled($event)" />
             }
         </div>
     </div>
@@ -22,7 +22,7 @@
     <div class="tab-content bg-base-100 border-base-300 p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @for (member of mutualFollowers(); track member.id) {
-                <app-member-card [member]="member" />
+                <app-member-card [member]="member" (followToggled)="onFollowToggled($event)" />
             }
     </div>
 </div>

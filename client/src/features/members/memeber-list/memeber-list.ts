@@ -13,6 +13,7 @@ import { FilterModal } from '../filter-modal/filter-modal';
   templateUrl: './memeber-list.html',
   styleUrl: './memeber-list.css'
 })
+
 export class MemeberList implements OnInit {
   // We use ViewChild to get a reference to the FilterModal component instance
   // so you can control it (open/close functions inside the child component) from this parent component.
@@ -21,7 +22,6 @@ export class MemeberList implements OnInit {
   private followService = inject(FollowService);
   protected paginatedMembers = signal<PaginatedResult<Member> | null>(null);
   protected memberParams = new MemberParams();
-
 
   ngOnInit(): void {
     const filters = localStorage.getItem('filters');
@@ -41,12 +41,9 @@ export class MemeberList implements OnInit {
       }
     });
   }
-  
   loadMembers() {
-    console.log('Loading members with params:', this.memberParams);
     this.memberService.getMembers(this.memberParams).subscribe({
       next: (members) => {
-        console.log('Received members:', members);
         this.paginatedMembers.set(members);
       },
       error: (error) => {
@@ -60,18 +57,17 @@ export class MemeberList implements OnInit {
     this.memberParams.pageSize = event.pageSize;
     this.loadMembers();
   }
-
-  openModal() {
-    this.modal.openModal(); // call open() in FilterModalComponent
-  }
-  closeModal () {
-    console.log('Filter modal closed');
-    this.modal.closeModal();
+  handleModalClose() {
+    // Parent only needs to handle its own state or logic when modal closes
+    console.log("Modal closed, handling parent state");
   }
   onFilterChanged(newParams: MemberParams) {
     // when filter modal submit new params with submit button, we update memberParams and reload members
     this.memberParams = newParams;
     this.loadMembers();
+  }
+  openModal() {
+    this.modal.openModal(); // call open() in FilterModalComponent
   }
   resetFilters() {
     this.memberParams = new MemberParams();

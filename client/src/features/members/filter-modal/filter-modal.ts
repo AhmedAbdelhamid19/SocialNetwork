@@ -22,7 +22,6 @@ export class FilterModal implements OnInit {
  closeModel = output();
  submitData = output<MemberParams>();
  filterParams = model<MemberParams>(new MemberParams());
- ageError = '';
  
   ngOnInit(): void {
     const filters = localStorage.getItem('filters');
@@ -37,12 +36,11 @@ export class FilterModal implements OnInit {
   openModal() {
     this.modelRef.nativeElement.showModal(); // built-in HTML dialog method
   }
-  
   closeModal() {
+    console.log("close in child");
     this.modelRef.nativeElement.close(); // built-in HTML dialog method
     this.closeModel.emit(); // send signal to parent that modal is closed
   }
-
   submitModal() {
     this.submitData.emit(this.filterParams());
     this.closeModal(); // close the modal after submitting
