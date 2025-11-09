@@ -4,5 +4,5 @@ namespace API.Helpers;
 
 public class FollowParams: PagingParams
 {
-    public string Predicate { get; set; } = "liked";
+    public string Predicate { get; set; } = "following";
 }

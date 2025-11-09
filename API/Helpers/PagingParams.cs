@@ -5,7 +5,7 @@ namespace API.Helpers;
 public class PagingParams
 {
     private const int MaxPageSize = 50;
-    private int _pageSize = 10;
+    private int _pageSize = 5;
 
     public int PageNumber { get; set; } = 1;
 

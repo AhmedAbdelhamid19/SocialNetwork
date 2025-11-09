@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +41,7 @@ namespace API.Controllers
         }
 
         [HttpGet("Follows-Ids")]
-        public async Task<ActionResult> GetFollowsIds([FromQuery] string predicate)
+        public async Task<ActionResult<PaginatedResult<Member>>> GetFollowsIds([FromQuery] FollowParams followParams)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null) return BadRequest("no id found in token");
@@ -47,7 +49,7 @@ namespace API.Controllers
 
             try
             {
-                var follows = await followRepository.GetAllFollowsIdsAsync(memberId, predicate);
+                var follows = await followRepository.GetAllFollowsIdsAsync(memberId, followParams);
                 return Ok(follows);
             }
             catch (ArgumentException ex)
@@ -57,7 +59,7 @@ namespace API.Controllers
         }
 
         [HttpGet("Follows-Members")]
-        public async Task<ActionResult> GetFollowsMembers([FromQuery] string predicate)
+        public async Task<ActionResult<PaginatedResult<Member>>> GetFollowsMembers([FromQuery] FollowParams followParams)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null) return BadRequest("no id found in token");
@@ -65,7 +67,7 @@ namespace API.Controllers
 
             try
             {
-                var follows = await followRepository.GetAllFollowsAsync(memberId, predicate);
+                var follows = await followRepository.GetAllFollowsAsync(memberId, followParams);
                 return Ok(follows);
             }
             catch (ArgumentException ex)

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,40 +15,36 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
             .FirstOrDefaultAsync(f => f.SourceMemberId == sourceUserId && f.TargetMemberId == targetUserId);
     }
 
-    public async Task<IReadOnlyList<int>> GetAllFollowsIdsAsync(int userId, string predicate)
+    public async Task<PaginatedResult<int>> GetAllFollowsIdsAsync(int userId, FollowParams followParams)
     {
-        return predicate switch
+        IQueryable<int> query = followParams.Predicate switch
         {
-            "following" => await context.Follows
+            "following" => context.Follows
                 .Where(f => f.SourceMemberId == userId)
-                .Select(f => f.TargetMemberId)
-                .ToListAsync(),
-
-            "followers" => await context.Follows
+                .Select(f => f.TargetMemberId),
+            "followers" => context.Follows
                 .Where(f => f.TargetMemberId == userId)
-                .Select(f => f.SourceMemberId)
-                .ToListAsync(),
-
-            _ => throw new ArgumentException("Invalid predicate", nameof(predicate))
+                .Select(f => f.SourceMemberId),
+            _ => throw new ArgumentException("Invalid predicate", nameof(followParams.Predicate))
         };
+        
+        return await PaginationHelper.CreateAsync(query, followParams.PageNumber, followParams.PageSize);
     }
 
-    public async Task<IReadOnlyList<Member>> GetAllFollowsAsync(int userId, string predicate)
+    public async Task<PaginatedResult<Member>> GetAllFollowsAsync(int userId, FollowParams followParams)
     {
-        return predicate switch
+        IQueryable<Member> query = followParams.Predicate switch
         {
-            "following" => await context.Follows
+            "following" => context.Follows
                 .Where(f => f.SourceMemberId == userId)
-                .Select(f => f.TargetMember)
-                .ToListAsync(),
-
-            "followers" => await context.Follows
+                .Select(f => f.TargetMember),
+            "followers" => context.Follows
                 .Where(f => f.TargetMemberId == userId)
-                .Select(f => f.SourceMember)
-                .ToListAsync(),
-
-            _ => throw new ArgumentException("Invalid predicate", nameof(predicate))
+                .Select(f => f.SourceMember),
+            _ => throw new ArgumentException("Invalid predicate", nameof(followParams.Predicate))
         };
+        
+        return await PaginationHelper.CreateAsync(query, followParams.PageNumber, followParams.PageSize);
     }
     public void RemoveFollow(MemberFollow memberFollow)
     {

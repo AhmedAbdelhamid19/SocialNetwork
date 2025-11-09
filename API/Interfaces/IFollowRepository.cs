@@ -1,5 +1,6 @@
 using System;
 using API.Entities;
+using API.Helpers;
 
 namespace API.Interfaces;
 
@@ -19,9 +20,9 @@ public interface IFollowRepository
     /// <param name="userId"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    Task<IReadOnlyList<int>> GetAllFollowsIdsAsync(int userId, string predicate);
+    Task<PaginatedResult<int>> GetAllFollowsIdsAsync(int userId, FollowParams followParams);
 
-    Task<IReadOnlyList<Member>> GetAllFollowsAsync(int userId, string predicate);
+    Task<PaginatedResult<Member>> GetAllFollowsAsync(int userId, FollowParams followParams);
 
     /// <summary>
     /// member unfollow another member
