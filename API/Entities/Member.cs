@@ -22,6 +22,10 @@ public class Member
     public List<MemberFollow> Following { get; set; } = [];
     [JsonIgnore]
     public List<MemberFollow> Followers { get; set; } = [];
+    [JsonIgnore]
+    public List<Message> MessagesSent { get; set; } = [];
+    [JsonIgnore]
+    public List<Message> MessagesRecieved { get; set; } = [];
 
     [JsonIgnore]
     // Navigation Property
