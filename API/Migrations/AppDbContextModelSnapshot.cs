@@ -118,6 +118,10 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateRead")
                         .HasColumnType("datetime2");
 
@@ -134,9 +138,6 @@ namespace API.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("SenderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("content")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
