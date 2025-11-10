@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { tap } from 'rxjs';
+import { tap, map } from 'rxjs';
 import { Member } from '../../types/member';
 import { environment } from '../../environments/environment';
+import { PaginatedResult, FollowParams } from '../../types/pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -12,30 +13,45 @@ export class FollowService {
   private http = inject (HttpClient);
   followersIds = signal<number[]>([]);
   followingIds = signal<number[]>([]);
-
+  
   toggleFollow(targetMemberId: number) {
     return this.http.post(this.baseUrl + `follow/toggle-follow/${targetMemberId}`, {});
   }
-  
-  getFollowersIds() {
-    return this.http.get<number[]>(this.baseUrl + `follow/follows-ids?predicate=followers`).pipe(
-      tap(ids => {
-        this.followersIds.set(ids);
-      })
+  getFollowersIdsPaged(params?: FollowParams) {
+    let httpParams = new HttpParams();
+    if (params?.predicate) httpParams = httpParams.append('predicate', params.predicate);
+    if (params?.pageNumber) httpParams = httpParams.append('pageNumber', params.pageNumber.toString());
+    if (params?.pageSize) httpParams = httpParams.append('pageSize', params.pageSize.toString());
+    return this.http.get<PaginatedResult<number>>(this.baseUrl + 'follow/follows-ids', { params: httpParams }).pipe(
+      tap(res => this.followersIds.set(res.items))
     );
   }
-  getFollowingIds() {
-    return this.http.get<number[]>(this.baseUrl + `follow/follows-ids?predicate=following`).pipe(
-      tap(ids => {
-        this.followingIds.set(ids);
-      })
+  getFollowingIdsPaged(params?: FollowParams) {
+    let httpParams = new HttpParams();
+    if (params?.predicate) httpParams = httpParams.append('predicate', params.predicate);
+    if (params?.pageNumber) httpParams = httpParams.append('pageNumber', params.pageNumber.toString());
+    if (params?.pageSize) httpParams = httpParams.append('pageSize', params.pageSize.toString());
+    return this.http.get<PaginatedResult<number>>(this.baseUrl + 'follow/follows-ids', { params: httpParams }).pipe(
+      tap(res => this.followingIds.set(res.items))
     );
   }
-  getFollowers() {
-    return this.http.get<Member[]>(this.baseUrl + `follow/follows-members?predicate=followers`);
+  getFollowersPaged(params?: FollowParams) {
+    let httpParams = new HttpParams();
+    if (params?.predicate) httpParams = httpParams.append('predicate', params.predicate);
+    if (params?.pageNumber) httpParams = httpParams.append('pageNumber', params.pageNumber.toString());
+    if (params?.pageSize) httpParams = httpParams.append('pageSize', params.pageSize.toString());
+    return this.http.get<PaginatedResult<Member>>(this.baseUrl + 'follow/follows-members', { params: httpParams }).pipe(
+      tap(res => this.followersIds.set(res.items.map(m => m.id)))
+    );
   }
-  getFollowing() {
-    return this.http.get<Member[]>(this.baseUrl + `follow/follows-members?predicate=following`);
+  getFollowingPaged(params?: FollowParams) {
+    let httpParams = new HttpParams();
+    if (params?.predicate) httpParams = httpParams.append('predicate', params.predicate);
+    if (params?.pageNumber) httpParams = httpParams.append('pageNumber', params.pageNumber.toString());
+    if (params?.pageSize) httpParams = httpParams.append('pageSize', params.pageSize.toString());
+    return this.http.get<PaginatedResult<Member>>(this.baseUrl + 'follow/follows-members', { params: httpParams }).pipe(
+      tap(res => this.followingIds.set(res.items.map(m => m.id)))
+    );
   }
   clearFollows() {
     this.followersIds.set([]);

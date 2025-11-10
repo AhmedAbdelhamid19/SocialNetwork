@@ -29,7 +29,7 @@ export class MemeberList implements OnInit {
       this.memberParams = JSON.parse(filters);
     }
     // load following ids so each member-card can correctly compute follow status
-    this.followService.getFollowingIds().subscribe({
+    this.followService.getFollowingIdsPaged({ predicate: 'following', pageNumber: 1, pageSize: 1000 }).subscribe({
       next: () => {
         // proceed to load members after we have the follow ids
         this.loadMembers();

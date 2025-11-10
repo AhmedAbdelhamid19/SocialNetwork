@@ -10,3 +10,9 @@ export type PaginatedResult<T> = {
   items: T[];
   metadata: Pagination;
 };
+
+export interface FollowParams {
+  predicate?: string;
+  pageNumber?: number;
+  pageSize?: number;
+}

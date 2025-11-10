@@ -1,55 +1,83 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FollowService } from '../../core/services/follow-service';
 import { MemberCard } from '../members/member-card/member-card';
 import { Member } from '../../types/member';
+import { FollowParams, PaginatedResult } from '../../types/pagination';
+import { Paginator } from '../../shared/paginator/paginator';
 
 @Component({
   selector: 'app-lists',
-  imports: [MemberCard],
+  imports: [MemberCard, Paginator],
   standalone: true,
   templateUrl: './lists.html',
   styleUrl: './lists.css'
 })
-export class Lists {
+export class Lists implements OnInit {
   private followService = inject(FollowService);
-  private followersSignal = signal<Member[]>([]);
-  private followingSignal = signal<Member[]>([]);
 
-  protected followers = computed(() => this.followersSignal());
-  protected following = computed(() => this.followingSignal());
+  // member lists and pagination metadata
+  protected followers = signal<Member[]>([]);
+  protected following = signal<Member[]>([]);
+  protected followersMeta = signal({ pageNumber: 1, pageSize: 5, totalCount: 0, totalPages: 0 });
+  protected followingMeta = signal({ pageNumber: 1, pageSize: 5, totalCount: 0, totalPages: 0 });
   protected mutualFollowers = computed(() => {
-    return this.following().filter(member => 
-      this.followers().some(follower => follower.id === member.id)
+    return this.following().filter((member: Member) =>
+      this.followers().some((follower: Member) => follower.id === member.id)
     );
   });
 
-  constructor() {
-    // Initialize the lists
-    this.loadLists();
+
+  ngOnInit(): void {
+    // initial load using default meta (page 1)
+    this.loadFollowersPage(this.followersMeta().pageNumber, this.followersMeta().pageSize);
+    this.loadFollowingPage(this.followingMeta().pageNumber, this.followingMeta().pageSize);
   }
 
-  private loadLists() {
-    this.followService.getFollowers().subscribe(followers => {
-      this.followersSignal.set(followers);
-    });
-    
-    this.followService.getFollowing().subscribe(following => {
-      this.followingSignal.set(following);
+  private loadFollowersPage(page: number, pageSize: number) {
+    const params: FollowParams = { predicate: 'followers', pageNumber: page, pageSize };
+    this.followService.getFollowersPaged(params).subscribe({
+      next: (res: PaginatedResult<Member>) => {
+        this.followers.set(res.items);
+        this.followersMeta.set({
+          pageNumber: params.pageNumber ?? 1,
+          pageSize: params.pageSize ?? 10,
+          totalCount: res.metadata?.totalCount ?? 0,
+          totalPages: res.metadata?.totalPages ?? 0
+        });
+      },
+      error: () => {
+        this.followers.set([]);
+        this.followersMeta.set({ pageNumber: 1, pageSize: pageSize, totalCount: 0, totalPages: 0 });
+      }
     });
   }
 
-  onFollowToggled(event: {memberId: number, isFollowing: boolean}) {
-    if (event.isFollowing) {
-      // Update following list
-      this.followService.getFollowing().subscribe(following => {
-        this.followingSignal.set(following);
-      });
-    } else {
-      // Remove from following list
-      this.followingSignal.update(list => 
-        list.filter(member => member.id !== event.memberId)
-      );
-    }
+  private loadFollowingPage(page: number, pageSize: number) {
+    const params: FollowParams = { predicate: 'following', pageNumber: page, pageSize };
+    this.followService.getFollowingPaged(params).subscribe({
+      next: (res: PaginatedResult<Member>) => {
+        this.following.set(res.items);
+        this.followingMeta.set({
+          pageNumber: params.pageNumber ?? 1,
+          pageSize: params.pageSize ?? 10,
+          totalCount: res.metadata?.totalCount ?? 0,
+          totalPages: res.metadata?.totalPages ?? 0
+        });
+      },
+      error: () => {
+        this.following.set([]);
+        this.followingMeta.set({ pageNumber: 1, pageSize: pageSize, totalCount: 0, totalPages: 0 });
+      }
+    });
   }
+
+  // paginator handlers (wired from template)
+  onFollowersPageChange(event: { pageNumber: number; pageSize: number }) {
+    this.loadFollowersPage(event.pageNumber, event.pageSize);
+  }
+
+  onFollowingPageChange(event: { pageNumber: number; pageSize: number }) {
+    this.loadFollowingPage(event.pageNumber, event.pageSize);
+  }
+
 }

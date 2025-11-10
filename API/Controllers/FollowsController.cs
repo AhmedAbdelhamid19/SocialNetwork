@@ -41,7 +41,7 @@ namespace API.Controllers
         }
 
         [HttpGet("Follows-Ids")]
-        public async Task<ActionResult<PaginatedResult<Member>>> GetFollowsIds([FromQuery] FollowParams followParams)
+        public async Task<ActionResult<PaginatedResult<int>>> GetFollowsIds([FromQuery] FollowParams followParams)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null) return BadRequest("no id found in token");
