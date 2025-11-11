@@ -1,1 +1,5 @@
-<p>messages works!</p>
+@for(message of paginatedMessages()?.items; track message.id) {
+    <div>
+        {{ message.content }}
+    </div>
+}
