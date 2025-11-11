@@ -2,8 +2,7 @@ using System;
 
 namespace API.Helpers;
 
-public class MessageParams
+public class MessageParams: PagingParams
 {
-    public required int RecipientId { get; set; }
-    public required string Content { get; set; }
+    public string Container { get; set; } = "Inbox";
 }
