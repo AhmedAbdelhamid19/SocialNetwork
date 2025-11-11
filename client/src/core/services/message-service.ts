@@ -18,4 +18,7 @@ export class MessageService {
     params = params.append('pageSize', pageSize.toString());
     return this.http.get<PaginatedResult<Message>>(`${this.baseUrl}message/getmessages`, { params });
   }
+  getMessageThread(memberId: number) {
+    return this.http.get<Message[]>(`${this.baseUrl}message/thread/${memberId}`);
+  }
 }

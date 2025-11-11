@@ -1,5 +1,55 @@
-@for(message of paginatedMessages()?.items; track message.id) {
-    <div>
-        {{ message.content }}
+<div class="flex flex-col w-full">
+    <div class="flex justify-between items-center">
+        <div class="tabs tabs-box tabs-lg text-primary w-fit">
+            @for (tab of tabs; track $index) {
+                <button role="tab" class="tab"
+                    [class.tab-active]="container === tab.container"
+                    (click)="setContainer(tab.container)!"
+                >
+                    {{tab.label}}
+                </button>
+            }
+        </div>
+        @if (paginatedMessages()?.metadata; as metadata) {
+            <app-paginator
+                [hidden]="metadata.totalCount === 0"
+                [pageNumber]="metadata.currentPage"
+                [pageSize]="metadata.pageSize"
+                [totalCount]="metadata.totalCount"
+                [totalPages]="metadata.totalPages"
+                (pageChange)="onPageChanged($event)"
+            />
+        }
+        
     </div>
-}
+</div>
+<div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+  <table class="table table-fixed w-full">
+    <!-- head -->
+    <thead>
+      <tr>
+        <th class="w-2/8"> @if(isInbox) {Sender} @else {Recipient} </th>
+        <th class="w-4/8">Message</th>
+        <th class="w-2/8">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+        @for(message of paginatedMessages()?.items; track message.id) {
+            <tr routerLink="/members/{{isInbox ? message.senderId : message.recipientId}}/messages" [class.font-bold]="!message.dateRead && !isInbox" class="hover:bg-base-200/50 cursor-pointer">
+                <td class="w-2/8">
+                    <div class="flex items-center gap-3">
+                        <div class="h-12 w-12">
+                            <img src="{{isInbox ? message.senderImageUrl : message.recipientImageUrl || '/user.png'}}" alt="Member Image" class="h-full w-full object-cover rounded" />
+                        </div>
+                        <div>
+                            {{isInbox ? message.senderDisplayName : message.recipientDisplayName}}
+                        </div>
+                    </div>
+                </td>
+                <td class="w-4/8 trancate"> {{ message.content }} </td>
+                <td class="w-2/8"> {{ message.messageSent + 'Z' | timeAgo }} </td>
+            </tr>
+        }
+    </tbody>
+  </table>
+</div>

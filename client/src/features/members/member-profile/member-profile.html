@@ -2,11 +2,11 @@
 	<div class="flex flex-col gap-3">
         <div class="flex gap-3">
             <span class="font-semibold">Member since: </span>
-            <span>{{member.created + 'z' | timeAgo}}</span>
+            <span>{{member.created + 'Z' | timeAgo}}</span>
         </div>
         <div class="flex gap-3">
             <span class="font-semibold">Last Active: </span>
-            <span>{{member.lastActive + 'z' | timeAgo}}</span>
+            <span>{{member.lastActive + 'Z' | timeAgo}}</span>
         </div>
         @if(memberService.editMode()) {
             <div class="divider"></div>
@@ -15,7 +15,7 @@
 						<span class="text-sm font-medium text-base-content/80">Display Name:</span>
 						<input
 							type="text"
-							class="input input-bordered flex-grow"
+							class="input input-bordered grow"
 							#displayNameInput
 							(focus)="displayNameInput.placeholder=''"
 							(blur)="displayNameInput.placeholder='Enter your display name'"
@@ -27,7 +27,7 @@
 					<div class="flex items-start gap-3 w-full">
 						<span class="text-sm font-medium text-base-content/80 mt-3">Description:</span>
 						<textarea
-							class="textarea textarea-bordered flex flex-grow"
+							class="textarea textarea-bordered flex grow"
 							[(ngModel)]="editMember.description"
 							name="description"
 						></textarea>
@@ -35,7 +35,7 @@
                     <div class="flex items-center gap-3 w-full">
 						<span class="text-sm font-medium text-base-content/80">Country:</span>
 						<input
-							class="input input-bordered flex-grow"
+							class="input input-bordered grow"
 							[(ngModel)]="editMember.country"
 							name="country"
 						/>
@@ -43,7 +43,7 @@
                     <div class="flex items-center gap-3 w-full">
 						<span class="text-sm font-medium text-base-content/80">City:</span>
 						<input
-							class="input input-bordered flex-grow"
+							class="input input-bordered grow"
 							[(ngModel)]="editMember.city"
 							name="city"
 						/>
