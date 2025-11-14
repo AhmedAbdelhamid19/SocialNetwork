@@ -17,7 +17,7 @@ export class Messages implements OnInit {
   protected container = 'Inbox';
   protected fetchedContainer = 'Inbox';
   protected pageNumber = 1
-  protected pageSize = 10;
+  protected pageSize = 5;
   protected paginatedMessages = signal<PaginatedResult<Message> | null>(null);
 
   tabs = [
@@ -25,6 +25,7 @@ export class Messages implements OnInit {
     { label: 'Outbox', container: 'Outbox' },
     { label: 'Unread', container: 'Unread' }
   ]
+
 
   ngOnInit(): void {
     this.loadMessages();
@@ -49,5 +50,20 @@ export class Messages implements OnInit {
     this.pageNumber = event.pageNumber;
     this.pageSize = event.pageSize;
     this.loadMessages();
+  }
+  deleteMessage(event: Event, id: number) {
+    event.stopPropagation();
+    this.messageService.deleteMessage(id).subscribe({
+      next: () => {
+        const currentMessages = this.paginatedMessages();
+        if (currentMessages) {
+          const updatedMessages = currentMessages.items.filter(m => m.id !== id);
+          this.paginatedMessages.set({
+            ...currentMessages,
+            items: updatedMessages
+          });
+        }
+      }
+    });
   }
 }

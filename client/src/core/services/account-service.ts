@@ -42,7 +42,7 @@ export class AccountService {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     // Load following IDs to maintain follow status
-    this.followService.getFollowingIdsPaged({ predicate: 'following', pageNumber: 1, pageSize: 1000 }).subscribe();
+    this.followService.getFollowingIdsPaged({ predicate: 'following', pageNumber: 1, pageSize: 5 }).subscribe();
     // Optionally pre-load a small page of members to warm cache
     this.followService.getFollowersPaged({ predicate: 'followers', pageNumber: 1, pageSize: 5 }).subscribe();
     this.followService.getFollowingPaged({ predicate: 'following', pageNumber: 1, pageSize: 5 }).subscribe();

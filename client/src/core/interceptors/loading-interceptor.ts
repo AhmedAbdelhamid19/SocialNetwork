@@ -37,6 +37,9 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     const urlPattern = req.url.split('/').slice(0, -1).join('/'); // remove last segment to get base pattern
     invalidateCache(urlPattern);
   }
+  if(req.url.includes('deleteMessage')) {
+    invalidateCache('getmessages');
+  }
 
   if (req.method === 'GET') {
     const cached = cache.get(cacheKey);

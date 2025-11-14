@@ -64,6 +64,29 @@ namespace API.Controllers
 
             return Ok(messageThread);
         }
-    }
     
+        [HttpDelete("deleteMessage/{messageId}")]
+        public async Task<IActionResult> DeleteMessage(int messageId)
+        {
+            var memberIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (memberIdStr == null) return BadRequest("no id found in token");
+            var memberId = int.Parse(memberIdStr);
+
+            var message = await messageRepository.GetMessage(messageId);
+            if (message == null) return NotFound();
+
+            if (message.SenderId != memberId && message.RecipientId != memberId)
+                return Unauthorized();
+
+            if (message.SenderId == memberId) message.SenderDeleted = true;
+            if (message.RecipientId == memberId) message.RecipientDeleted = true;
+
+            if (message.SenderDeleted && message.RecipientDeleted)
+                messageRepository.DeleteMessage(message);
+
+            if (await messageRepository.SaveAllAsync()) return Ok();
+
+            return BadRequest("Problem deleting the message");    
+        }
+    }
 }

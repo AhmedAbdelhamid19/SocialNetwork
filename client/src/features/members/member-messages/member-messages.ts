@@ -19,11 +19,6 @@ export class MemberMessages implements OnInit{
   protected messages = signal<Message[]>([]);
   protected MessageContent = '';
 
-  print(num: number) {
-    setTimeout(() => {
-      console.log(num);
-    })
-  }
 
   // changing the signal that affect the dom elements will put in microtask queue that run after the current call stack is cleared but before the macrotask queue and before callbacks like setTimeout
   // so we can use setTimeout here to wait for the dom to update
@@ -54,16 +49,19 @@ export class MemberMessages implements OnInit{
   }
   sendMessage() {
     const memberId = this.memberService.member()?.id;
-    console.log('Sending message to memberId:', memberId, 'with content:', this.MessageContent);
     if(memberId && this.MessageContent.trim()) {
       this.messageService.sendMessage(this.MessageContent, memberId).subscribe({
         next: message => {
-          console.log('Sent message:', message);
           this.messages.update(msgs => {
             message.currentUserSender = true;
             return [...msgs, message];
           });
           this.MessageContent = '';
+        },
+        complete: () => {
+          setTimeout(() => {
+            this.scrollToBottom();
+          });
         }
       });
     }
