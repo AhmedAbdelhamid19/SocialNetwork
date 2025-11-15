@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Text.Json;
 using API.Errors;
@@ -7,9 +6,9 @@ namespace API.Middleware;
 // Instead of letting ASP.NET crash and show ugly error pages, 
 // you control the error format and always respond with clean JSON.
 // type this in program.cs to add this middleware: app.UseMiddleware<ExceptionMiddleware>();
-
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware>logger, IHostEnvironment env)
 {
+    // when you but this in middleware dotnet search for Invoke or InvokeAsync method and call it
     public async Task InvokeAsync(HttpContext context) {
         try
         {
@@ -17,7 +16,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         }
         catch (System.Exception ex)
         {
-            logger.LogError(ex, "{message}", ex.Message); // log the error first
+            logger.LogError(ex, ex.Message); // log the error first
             context.Response.ContentType = "application/json"; // specify the type of the response (json format)
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError; // status code is internal server error
 
@@ -30,7 +29,9 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
-            var json = JsonSerializer.Serialize(response, options); // return the general response error as json
+            // convert APiException object to json
+            var json = JsonSerializer.Serialize(response, options);
+            // Writes the given json to the response body
             await context.Response.WriteAsync(json);
         }
     }

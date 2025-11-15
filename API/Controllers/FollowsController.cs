@@ -9,7 +9,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FollowController(IFollowRepository followRepository) : BaseApiController
+    public class FollowController(IFollowRepository followRepository, IMemberRepository memberRepository) : BaseApiController
     {
         [HttpPost("toggle-Follow/{targetMemberId}")]
         public async Task<ActionResult> ToggleFollow(int targetMemberId)
@@ -18,6 +18,9 @@ namespace API.Controllers
             if (memberId == null) return BadRequest("no id found in token");
             int sourceUserId = int.Parse(memberId);
 
+            var targetMember = await memberRepository.GetMemberByIdAsync(targetMemberId);
+            if (targetMember == null) return NotFound("Target member not found");
+            
             var existingFollow = await followRepository.GetFollowAsync(sourceUserId, targetMemberId);
             if (existingFollow == null)
             {
@@ -75,5 +78,5 @@ namespace API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-    }
+    } 
 }

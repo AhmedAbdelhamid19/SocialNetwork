@@ -40,9 +40,12 @@ namespace API.Controllers
             };
 
             context.Users.Add(user);
-            await context.SaveChangesAsync();
-            
-            return Ok(user.ToDto(tokenService));
+
+            if(await context.SaveChangesAsync() > 0)
+            {
+                return Ok(user.ToDto(tokenService));
+            }
+            return BadRequest("Problem registering user");
         }
 
         [HttpPost("login")]

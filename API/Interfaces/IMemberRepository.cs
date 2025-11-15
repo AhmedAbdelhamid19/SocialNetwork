@@ -5,10 +5,10 @@ namespace API.Interfaces;
 
 public interface IMemberRepository
 {
-    Task<Member?> GetMemberByIdAsync(int id);
+    Task<Member?> GetMemberByIdAsync(int id, bool includeUser = false, bool includePhotos = false);
     Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberParams);
     void Update(Member member);
-    Task<bool> SaveAllAsync();
     Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(int memberId);
-    Task<Member?> GetMemberForUpdate(int id);
+    Task<bool> SaveAllAsync();
+
 }

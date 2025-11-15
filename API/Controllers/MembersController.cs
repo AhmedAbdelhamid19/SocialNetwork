@@ -1,12 +1,10 @@
 using API.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using API.Entities;
 using Microsoft.AspNetCore.Authorization;
 using API.Interfaces;
 using API.DTOs;
 using System.Security.Claims;
-using System.Globalization;
 using API.Helpers;
 
 namespace API.Controllers
@@ -28,12 +26,11 @@ namespace API.Controllers
             var users = await memberRepository.GetMembersAsync(memberParams);
             return Ok(users);
         }
-
-
         [HttpGet("GetUser/{id}")]
         public async Task<ActionResult<Member>> GetMember(int id)
         {
-            var user = await memberRepository.GetMemberByIdAsync(id);
+            var user = await memberRepository
+                .GetMemberByIdAsync(id, includeUser: false, includePhotos: false);
             if (user == null)
             {
                 return NotFound();
@@ -47,14 +44,14 @@ namespace API.Controllers
             var photos = await memberRepository.GetPhotosForMemberAsync(id);
             return Ok(photos);
         }
-
         [HttpPut("update")]
         public async Task<ActionResult> UpdateMember(MemberUpdateDto memberUpdateDto)
         {
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository.GetMemberForUpdate(int.Parse(memberId));
+            var member = await memberRepository
+                .GetMemberByIdAsync(int.Parse(memberId), includeUser: true, includePhotos: false);
 
             if (member == null) return BadRequest("Member doesn't exist");
             member.DisplayName = memberUpdateDto.DisplayName ?? member.DisplayName;
@@ -69,14 +66,14 @@ namespace API.Controllers
             if (await memberRepository.SaveAllAsync()) return NoContent();
             return BadRequest("Faild to update member");
         }
-
         [HttpPost("add-photo")]
         public async Task<ActionResult<Photo>> AddPhoto([FromForm] IFormFile file)
         {
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository.GetMemberByIdAsync(int.Parse(memberId));
+            var member = await memberRepository
+            .GetMemberByIdAsync(int.Parse(memberId), includeUser: false, includePhotos: false);
             if (member == null) return BadRequest("Member doesn't exist");
 
             var result = await photoService.UploadPhotoAsync(file);
@@ -95,32 +92,19 @@ namespace API.Controllers
 
             if (await memberRepository.SaveAllAsync())
             {
-                /*
-                    CreatedAtAction is used to return a 201 Created response, and include the following:
-                        Location: /api/Members/GetUser/{memberId}
-                        Content-Type: application/json
-                    and also response body like:
-                    {
-                        "url": "https://res.cloudinary.com/.../{publicId}", // The SecureUrl from Cloudinary
-                        "publicId": "{publicId}",                          // The PublicId from Cloudinary
-                        "memberId": 123                                    // The member's ID
-                    }
-                    new { id = member.Id } is an anonymous object that provides the route values needed to generate the URL for the GetMember action
-                    photo is the body of the response, which contains the details of the newly added photo
-                */
                 return CreatedAtAction(nameof(GetMember), new { id = member.Id }, photo);
             }
 
-            return BadRequest("Problem adding photo");
+            return BadRequest("Problem happend at adding photo");
         }
-
         [HttpPut("set-main-photo/{photoId}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository.GetMemberByIdAsync(int.Parse(memberId));
+            var member = await memberRepository
+                .GetMemberByIdAsync(int.Parse(memberId), includeUser: false, includePhotos: true);
             if (member == null) return BadRequest("Member doesn't exist");
 
             var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);
@@ -135,14 +119,14 @@ namespace API.Controllers
 
             return BadRequest("Failed to set main photo, try again");
         }
-
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository.GetMemberByIdAsync(int.Parse(memberId));
+            var member = await memberRepository
+                .GetMemberByIdAsync(int.Parse(memberId), includeUser: false, includePhotos: true);
             if (member == null) return BadRequest("Member doesn't exist");
 
             var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);

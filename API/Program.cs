@@ -43,13 +43,20 @@ builder.Services
         };
     });
 
+// CORS = Cross-Origin Resource Sharing, To protect users from malicious websites.
+// these websites can attempt to make requests to your API from a different origin 
+// (domain, protocol, or port) than your API is hosted on.
+// these website can make also another website same as your angular app to make request to your API
+// and make user logged in unknowingly and steal data from the user.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-            policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        // 4200 is the default port for Angular dev server
+        // when you deploy your angular app you need to change this to your angular app url
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200") // represent frontend url
+            .AllowAnyHeader() // allow any header like authorization header, content-type, etc
+            .AllowAnyMethod(); // get, post, put, delete
     });
 });
 var app = builder.Build();

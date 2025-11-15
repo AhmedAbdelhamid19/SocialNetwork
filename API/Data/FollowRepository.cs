@@ -14,7 +14,6 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
         return await context.Follows
             .FirstOrDefaultAsync(f => f.SourceMemberId == sourceUserId && f.TargetMemberId == targetUserId);
     }
-
     public async Task<PaginatedResult<int>> GetAllFollowsIdsAsync(int userId, FollowParams followParams)
     {
         IQueryable<int> query = followParams.Predicate switch
@@ -30,7 +29,6 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
         
         return await PaginationHelper.CreateAsync(query, followParams.PageNumber, followParams.PageSize);
     }
-
     public async Task<PaginatedResult<Member>> GetAllFollowsAsync(int userId, FollowParams followParams)
     {
         IQueryable<Member> query = followParams.Predicate switch
@@ -50,12 +48,10 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
     {
         context.Follows.Remove(memberFollow);
     }
-    
     public void AddFollow(MemberFollow memberFollow)
     {
-        context.Follows.AddAsync(memberFollow);
+        context.Follows.Add(memberFollow);
     }
-
     public async Task<bool> SaveAllAsync()
     {
         return await context.SaveChangesAsync() > 0;

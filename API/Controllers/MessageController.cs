@@ -48,9 +48,10 @@ namespace API.Controllers
             if (memberIdStr == null) return BadRequest("no id found in token");
             var memberId = int.Parse(memberIdStr);
 
-            var paginatedMessages = await messageRepository.GetMessagesForMember(messageParams, memberId);
+            var paginatedMessages = await messageRepository
+                .GetMessagesForMember(messageParams, memberId);
 
-            return Ok(paginatedMessages);
+            return Ok(paginatedMessages);`
         }
         
         [HttpGet("thread/{recipientId}")]
@@ -60,7 +61,8 @@ namespace API.Controllers
             if (memberIdStr == null) return BadRequest("no id found in token");
             var memberId = int.Parse(memberIdStr);
 
-            var messageThread = await messageRepository.GetMessageThread(memberId, recipientId);
+            var messageThread = await messageRepository
+                .GetMessageThread(memberId, recipientId);
 
             return Ok(messageThread);
         }
@@ -89,4 +91,4 @@ namespace API.Controllers
             return BadRequest("Problem deleting the message");    
         }
     }
-}
+} 

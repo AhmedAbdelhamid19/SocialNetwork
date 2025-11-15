@@ -14,17 +14,14 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
     {
         context.Messages.Add(message);
     }
-
     public void DeleteMessage(Message message)
     {
         context.Messages.Remove(message);
     }
-
     public async Task<Message?> GetMessage(int id)
     {
         return await context.Messages.FindAsync(id);
     }
-
     public async Task<PaginatedResult<MessageDTO>> GetMessagesForMember(MessageParams messageParams, int memberId)
     {
         var query = context.Messages.OrderByDescending(m => m.MessageSent).AsQueryable();
@@ -41,18 +38,20 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
 
         query = query.OrderByDescending(m => m.MessageSent);
 
-        return await PaginationHelper.CreateAsync(query.Select(MessageExtensions.ToMessageDTOExpression()), messageParams.PageNumber, messageParams.PageSize);
+        return await PaginationHelper
+            .CreateAsync(
+                query.Select(MessageExtensions.ToMessageDTOExpression()),
+                messageParams.PageNumber, 
+                messageParams.PageSize
+            );
     }
-
     public async Task<IReadOnlyList<MessageDTO>> GetMessageThread(int currentMemberId, int recipientId)
     {
-        // get theres required elements and update DateRead 
-        // ExcuteUpdateAsync is more efficient than fetching entities and updating in memory by ForEachAsync
-        // everything is done in the database, EF change tracker is not involved and don't know anything about these entities
+        // we will mark all unread messages as read, and retrieve all messages between the two members
+        // ExcuteUpdateAsync is made update in one query to database instead of 2 queries
         await context.Messages
             .Where(m => m.RecipientId == currentMemberId && m.DateRead == null && m.SenderId == recipientId)
             .ExecuteUpdateAsync(s => s.SetProperty(p => p.DateRead, p => DateTime.UtcNow));
-        // .ForEachAsync(m => m.DateRead = DateTime.UtcNow);
 
         // fetch all messages between the two members
         return await context.Messages
@@ -67,4 +66,4 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
     {
         return await context.SaveChangesAsync() > 0;
     }
-}
+} 
