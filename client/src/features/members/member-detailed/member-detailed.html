@@ -4,16 +4,12 @@
             <img src="{{member.imageUrl || '/user.png'}}" alt="Member Image" class="rounded-full mx-10 m-3" />
             <div class="card-body">
                 <div class="flex flex-col items-center mb-3">
-                    <div class="flex text-2xl text-primary">
-                        {{member.displayName}}, {{member.dateOfBirth | age}}
-                    </div>
+                    <div class="flex text-2xl text-primary"> {{member.displayName}}, {{member.dateOfBirth | age}}</div>
                     <div class="text-sm">
                         {{member.city}}, {{member.country}}
                     </div>
                 </div>
-
                 <div class="divider"></div>
-
                 <ul class="menu rounded-box w-full text-xl">
                     <li><a routerLink="profile" routerLinkActive="text-primary">Profile</a></li>
                     <li><a routerLink="photos" routerLinkActive="text-primary">Photos</a></li>
@@ -21,7 +17,15 @@
                 </ul>
                 <div class="card-actions justify-between gap-2 px-2 mb-3">
                     <button class="btn btn-primary flex-1">Go Back</button>
-                    <button class="btn btn-primary flex-1">Like user</button> 
+                    @if(!isCurrentUser()) {
+                        <button class="btn btn-primary flex-1" (click)="toggleFollow()">
+                            @if(isFollowing()) {
+                                Unfollow user
+                            } @else {
+                                Follow user
+                            }
+                        </button> 
+                    }
                 </div>
             </div>
         </div>
@@ -30,7 +34,7 @@
                 <h3 class="card-title text-3xl text-primary">{{title()}}</h3>
                 @if(isCurrentUser()) {
                     <button class="btn btn-outline btn-primary" (click)="memberService.editMode.set(!memberService.editMode())">
-                        {{memberService.editMode() ? 'Cancel' : 'Edit Profile'}}
+                        {{memberService.editMode() ? 'Cancel' : (title() === 'Photos' ? 'Upload Photo' : 'Edit Profile')}}
                     </button>
                 }
             </div>

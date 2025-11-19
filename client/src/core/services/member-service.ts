@@ -26,7 +26,6 @@ export class MemberService {
     if(memberParams.gender) {
       params = params.append('gender', memberParams.gender);
     }
-
     return this.http.get<PaginatedResult<Member>> (this.baseUrl + 'members/GetUsers', {params}).pipe(
       tap(() => {
         localStorage.setItem('filters', JSON.stringify(memberParams));

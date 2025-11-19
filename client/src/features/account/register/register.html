@@ -8,7 +8,7 @@
     <div class="card-body w-full">
         @if(currentStep() === 1) {
             <form [formGroup]="credentialForm" class="flex flex-col gap-4 m1 p-2 w-full steps">
-                <app-text-input label="Email" formControlName="email"/>
+                <app-text-input label="Email" type="email" formControlName="email"/>
                 <app-text-input label="Display name" formControlName="displayName"/>
                 <app-text-input label="Password" type="password" formControlName="password"/>
                 <app-text-input label="Confirm password" type="password" formControlName="confirmPassword"/>

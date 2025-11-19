@@ -5,6 +5,7 @@ import { Member } from '../../../types/member';
 import { AgePipe } from '../../../core/pipes/age-pipe';
 import { AccountService } from '../../../core/services/account-service';
 import { MemberService } from '../../../core/services/member-service';
+import { FollowService } from '../../../core/services/follow-service';
 
 
 @Component({
@@ -24,14 +25,17 @@ import { MemberService } from '../../../core/services/member-service';
 export class MemberDetailed {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private followService = inject(FollowService);
   protected title = signal<string | undefined>('Profile');
   private accountService = inject(AccountService);
   protected memberService = inject(MemberService);
   protected isCurrentUser = computed(() => {
     return this.accountService.currentUser()?.id === Number(this.route.snapshot.paramMap.get('id'));
   });
-
+  isFollowing = signal<boolean>(false);
   ngOnInit() {
+    this.isFollowing.set(this.followService.followingIds()
+      .includes(Number(this.route.snapshot.paramMap.get('id'))));
     this.title.set(this.route.firstChild?.snapshot?.title);
 
     // you subscribe to router events to update the title when the child route changes
@@ -42,6 +46,13 @@ export class MemberDetailed {
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.title.set(this.route.firstChild?.snapshot?.title);
+    });
+  }
+  toggleFollow() {
+    const member = this.memberService.member();
+    if(!member) return;
+    this.followService.toggleFollow(member.id).subscribe(() => {
+      this.isFollowing.set(!this.isFollowing());
     });
   }
 }

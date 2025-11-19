@@ -104,7 +104,7 @@ namespace API.Controllers
             if (memberId == null) return BadRequest("no id found in token");
 
             var member = await memberRepository
-                .GetMemberByIdAsync(int.Parse(memberId), includeUser: false, includePhotos: true);
+                .GetMemberByIdAsync(int.Parse(memberId), includeUser: true, includePhotos: true);
             if (member == null) return BadRequest("Member doesn't exist");
 
             var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);

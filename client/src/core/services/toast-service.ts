@@ -4,11 +4,9 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ToastService {
-  
   constructor() {
     this.createToastContainer();
   }
-
   private createToastContainer() {
     if(!document.getElementById('toast-container')) { 
       const container = document.createElement('div');
@@ -18,11 +16,13 @@ export class ToastService {
     }
   }
 
-  private createToastElement(message: string, alertClass: string, duration: number = 3000) {
+  private createToastElement(
+    message: string, alertClass: string, duration: number = 3000) {
     const toastContainer = document.getElementById('toast-container');
     if(!toastContainer) return;
 
     const toast = document.createElement('div');
+    // class="alert alert-success shadow-lg"
     toast.classList.add('alert', alertClass, 'shadow-lg');
     toast.innerHTML = `
       <span>${message}</span>
@@ -40,21 +40,16 @@ export class ToastService {
       }
     }, duration);
   }
-
   success(message: string, duration: number = 3000) {
     this.createToastElement(message, 'alert-success', duration);
   }
-
   error(message: string, duration: number = 3000) {
     this.createToastElement(message, 'alert-error', duration);
   }
-
   warning(message: string, duration: number = 3000) {
     this.createToastElement(message, 'alert-warning', duration);
   }
-
   info(message: string, duration: number = 3000) {
-    this.createToastElement(message, 'alert-error', duration);
-  }
-  
+    this.createToastElement(message, 'alert-info', duration);
+  } 
 }

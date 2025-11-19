@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Photo } from '../../../types/member';
 import { ImageUpload } from "../../../shared/image-upload/image-upload";
 import { AccountService } from '../../../core/services/account-service';
+import { ToastService } from '../../../core/services/toast-service';
 
 @Component({
   selector: 'app-member-photos',
@@ -15,15 +16,13 @@ import { AccountService } from '../../../core/services/account-service';
 export class MemberPhotos implements OnInit {
   protected memberService = inject(MemberService);
   protected accountService = inject(AccountService);
+  protected toastService = inject(ToastService);
   private route = inject(ActivatedRoute);
   protected photos = signal<Photo[]>([]);
   protected loading = signal(false);
   
   ngOnInit(): void {
-    // instead of setting up your subscription in the constructor, you should use ngOnInit:
-    // ngOnInit is the standard Angular lifecycle hook for performing side effects like HTTP calls.
-    // The constructor should only handle dependency injection, not logic.
-    //When going out to get data from an API, it's typically done in the ng on init.
+    // get photo of the member and reorder to have main photo first
     const memberId = this.route.parent?.snapshot.paramMap.get('id')!;
     if(memberId) {
       this.memberService.getMemberPhotos(memberId).subscribe({
@@ -46,6 +45,7 @@ export class MemberPhotos implements OnInit {
         this.photos.set([...this.photos(), photo]);
       },
       error: err => {
+        this.toastService.error('Failed to upload photo.');
         console.error('Error uploading photo:', err);
         this.loading.set(false);
       }
@@ -74,6 +74,7 @@ export class MemberPhotos implements OnInit {
         this.photos.set(reorderedPhotos);
       },
       error: err => {
+        this.toastService.error('Failed to set main photo.');
         console.error('Error setting main photo:', err);
       }
     });
@@ -84,8 +85,8 @@ export class MemberPhotos implements OnInit {
         this.photos.set(this.photos().filter(p => p.id !== photo.id));
       },
       error: err => {
+        this.toastService.error('Failed to delete photo.');
         console.error('Error deleting photo:', err);
-        // Optionally, provide user feedback here (e.g., show a toast or alert)
       }
     });
   }

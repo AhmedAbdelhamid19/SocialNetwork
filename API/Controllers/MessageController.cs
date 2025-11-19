@@ -51,7 +51,7 @@ namespace API.Controllers
             var paginatedMessages = await messageRepository
                 .GetMessagesForMember(messageParams, memberId);
 
-            return Ok(paginatedMessages);`
+            return Ok(paginatedMessages);
         }
         
         [HttpGet("thread/{recipientId}")]

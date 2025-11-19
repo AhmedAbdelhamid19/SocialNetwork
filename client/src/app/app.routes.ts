@@ -18,7 +18,7 @@ export const routes: Routes = [
     {path: '', component: Home},
     {
         path: '',
-        runGuardsAndResolvers: 'always',
+        runGuardsAndResolvers: 'always', // make angular run the guards and resolvers on every navigation with differnt params
         children: [
             {path: 'members', component: MemeberList, canActivate: [authGuard]},
             {

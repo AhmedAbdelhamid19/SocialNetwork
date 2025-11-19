@@ -2,56 +2,56 @@
 	<div class="flex flex-col gap-3">
         <div class="flex gap-3">
             <span class="font-semibold">Member since: </span>
-            <span>{{member.created + 'Z' | timeAgo}}</span>
+            <span>{{member.created | timeAgo}}</span>
         </div>
         <div class="flex gap-3">
             <span class="font-semibold">Last Active: </span>
-            <span>{{member.lastActive + 'Z' | timeAgo}}</span>
+            <span>{{member.lastActive | timeAgo}}</span>
         </div>
         @if(memberService.editMode()) {
             <div class="divider"></div>
-				<form #editForm="ngForm" (ngSubmit)="updateProfile()" class="flex flex-col gap-4 w-full">
-					<div class="flex items-center gap-3 w-full">
-						<span class="text-sm font-medium text-base-content/80">Display Name:</span>
-						<input
-							type="text"
-							class="input input-bordered grow"
-							#displayNameInput
-							(focus)="displayNameInput.placeholder=''"
-							(blur)="displayNameInput.placeholder='Enter your display name'"
-							[(ngModel)]="editMember.displayName"
-							name="displayName"
-							placeholder="Enter your display name"
-						/>
-					</div>
-					<div class="flex items-start gap-3 w-full">
-						<span class="text-sm font-medium text-base-content/80 mt-3">Description:</span>
-						<textarea
-							class="textarea textarea-bordered flex grow"
-							[(ngModel)]="editMember.description"
-							name="description"
-						></textarea>
-					</div>
-                    <div class="flex items-center gap-3 w-full">
-						<span class="text-sm font-medium text-base-content/80">Country:</span>
-						<input
-							class="input input-bordered grow"
-							[(ngModel)]="editMember.country"
-							name="country"
-						/>
-					</div>
-                    <div class="flex items-center gap-3 w-full">
-						<span class="text-sm font-medium text-base-content/80">City:</span>
-						<input
-							class="input input-bordered grow"
-							[(ngModel)]="editMember.city"
-							name="city"
-						/>
-					</div>
-                    <div class="flex self-end">
-                        <button [disabled]="!editForm.dirty" type="submit" class="btn btn-success">submit</button>
-                    </div>
-				</form>
+			<form #editForm="ngForm" (ngSubmit)="updateProfile()" class="flex flex-col gap-4 w-full">
+				<div class="flex items-center gap-3 w-full">
+					<span class="text-sm font-medium text-base-content/80">Display Name:</span>
+					<input
+						type="text"
+						class="input input-bordered grow"
+						#displayNameInput
+						(focus)="displayNameInput.placeholder=''"
+						(blur)="displayNameInput.placeholder='Enter your display name'"
+						[(ngModel)]="editMember.displayName"
+						name="displayName"
+						placeholder="Enter your display name"
+					/>
+				</div>
+				<div class="flex items-start gap-3 w-full">
+					<span class="text-sm font-medium text-base-content/80 mt-3">Description:</span>
+					<textarea
+						class="textarea textarea-bordered flex grow"
+						[(ngModel)]="editMember.description"
+						name="description"
+					></textarea>
+				</div>
+				<div class="flex items-center gap-3 w-full">
+					<span class="text-sm font-medium text-base-content/80">Country:</span>
+					<input
+						class="input input-bordered grow"
+						[(ngModel)]="editMember.country"
+						name="country"
+					/>
+				</div>
+				<div class="flex items-center gap-3 w-full">
+					<span class="text-sm font-medium text-base-content/80">City:</span>
+					<input
+						class="input input-bordered grow"
+						[(ngModel)]="editMember.city"
+						name="city"
+					/>
+				</div>
+				<div class="flex self-end">
+					<button [disabled]="!editForm.dirty" type="submit" class="btn btn-success">submit</button>
+				</div>
+			</form>
         } @else {
 			<h3 class="text-lg font-semibold text-primary">About {{member.displayName}}</h3>
             <div>{{member.description}}</div>

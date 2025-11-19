@@ -17,9 +17,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               const modelStateErrors = [];
               for(const key in error.error.errors) {
                 if(error.error.errors[key]) {
+                  // push each error message array to modelStateErrors
                   modelStateErrors.push(error.error.errors[key]);
                 }
               }
+              // flatten the array of arrays into a single array and throw it
+              // so then you can subscribe to it in the component and capture the array of error messages
+              // in error callback
               throw modelStateErrors.flat();
             } else {
               toast.error(error.error);

@@ -2,7 +2,6 @@ import { Component, inject, output, signal } from '@angular/core';
 import { AbstractControl, Form, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RegisterCreds, User } from '../../../types/user';
 import { AccountService } from '../../../core/services/account-service';
-import { JsonPipe } from '@angular/common';
 import { TextInput } from "../../../shared/text-input/text-input";
 import { Router } from '@angular/router';
 
@@ -31,7 +30,8 @@ export class Register {
       confirmPassword: ['', [Validators.required, this.matching('password')]]
     });
     this.credentialForm.controls['password'].valueChanges.subscribe(() => {
-      // this mean when the password field changes, we need to run validators in the confirm password field (custom validator ...).
+      // this mean when the password field changes, we need to run 
+      // validators in the confirm password field (custom validator ...).
       this.credentialForm.controls['confirmPassword'].updateValueAndValidity();
     });
 
@@ -44,7 +44,8 @@ export class Register {
   }
   matching(otherField: string) {
     return (control: AbstractControl): ValidationErrors | null => {
-      // here control refer to the field where this validator is applied (the input field that you will put this validator on)
+      // here control refer to the field where this validator is 
+      // applied (the input field that you will put this validator on)
       const parent = control.parent;
       if(!parent) return null;
       const otherFieldValue = parent.get(otherField)?.value;
@@ -52,6 +53,7 @@ export class Register {
     }
   }
   nextStep() {
+    // go to next step only if current step form is valid
     if(this.credentialForm.valid) {
       this.currentStep.update(n => n + 1);
     }
@@ -69,7 +71,7 @@ export class Register {
         },
         error: error => {
           console.log(error);
-          this.validationErrors
+          this.validationErrors.set(error.errors || []);
         }
       })
     }

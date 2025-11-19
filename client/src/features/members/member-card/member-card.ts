@@ -20,8 +20,6 @@ export class MemberCard implements OnInit {
   ngOnInit(): void {
     this.isFollowing.set(this.followService.followingIds().includes(this.member().id))
   }
-
-
   toggleFollow() {
     this.followService.toggleFollow(this.member().id).subscribe({
       next: () => {
