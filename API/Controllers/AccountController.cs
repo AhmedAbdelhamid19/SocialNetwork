@@ -7,6 +7,7 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,16 +15,11 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(AppDbContext context, ITokenService tokenService) : BaseApiController
+    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService) : BaseApiController
     {
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO register) 
         {
-            if(await EmailExist(register.Email))
-                return BadRequest("Email taken before");
-
-            using var hmac = new HMACSHA512();
-
             var user = new AppUser {
                 DisplayName = register.DisplayName,
                 Email = register.Email,
@@ -38,7 +34,7 @@ namespace API.Controllers
                 }
             };
 
-            context.Users.Add(user);
+            userManager.Users.Add(user, register.Password);
 
             if(await context.SaveChangesAsync() > 0)
             {
@@ -57,11 +53,6 @@ namespace API.Controllers
              
             
             return user.ToDto(tokenService);
-        }
-
-        private async Task<bool> EmailExist(string email) 
-        {
-            return await context.Users.AnyAsync(u => u.Email!.ToLower().Equals(email.ToLower()));
         }
     }
 }

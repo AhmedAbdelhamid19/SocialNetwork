@@ -4,16 +4,17 @@ using System.Text.Json;
 using API.Controllers;
 using API.DTOs;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
 public class Seed
 {
-    public static async Task SeedUsers(AppDbContext context)
+    public static async Task SeedUsers(UserManager<AppUser> userManager)
     {
         // check if any users in the database
-        if (await context.Users.AnyAsync()) return;
+        if (await userManager.Users.AnyAsync()) return;
 
         // read the json file as nullable string
         var membersString = await File.ReadAllTextAsync("Data/UserSeedData.json");
@@ -24,7 +25,6 @@ public class Seed
 
         foreach (var member in members)
         {
-            using var hmac = new HMACSHA512();
             var user = new AppUser
             {
                 Email = member.Email,
@@ -49,8 +49,24 @@ public class Seed
             {
                 Url = member.ImageUrl ?? string.Empty,
             });
-            context.Users.Add(user);
+            var result = await userManager.CreateAsync(user, "Pa$$w0rd");
+            if(!result.Succeeded)
+            {
+                throw new Exception("Failed to create seed user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+            await userManager.AddToRoleAsync(user, "Member");
         }
-        await context.SaveChangesAsync();
+        var admin = new AppUser
+        {
+            DisplayName = "Admin",
+            Email = "admin@test.com",
+            UserName = "admin@test.com"
+        };
+        var adminResult = await userManager.CreateAsync(admin, "Pa$$w0rd");
+        if(!adminResult.Succeeded)
+        {
+            throw new Exception("Failed to create admin user: " + string.Join(", ", adminResult.Errors.Select(e => e.Description)));
+        }
+        await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"] );
     }
 }

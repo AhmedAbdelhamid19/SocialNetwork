@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Data;
 
-public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser, IdentityRole<int>, int>(options)
-{ 
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser, IdentityRole<int>, int>(options)
+{
     public DbSet<Member> Members { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<MemberFollow> Follows { get; set; }
@@ -18,10 +18,10 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser,
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<IdentityRole<string>>().HasData(
-            new IdentityRole<string> { Id = "member-id", Name = "Member", NormalizedName = "MEMBER" },
-            new IdentityRole<string> { Id = "moderator-id", Name = "Moderator", NormalizedName = "MODERATOR" },
-            new IdentityRole<string> { Id = "admin-id", Name = "Admin", NormalizedName = "ADMIN" }
+        builder.Entity<IdentityRole<int>>().HasData(
+            new IdentityRole<int> { Id = 1, Name = "Member", NormalizedName = "MEMBER" },
+            new IdentityRole<int> { Id = 2, Name = "Moderator", NormalizedName = "MODERATOR" },
+            new IdentityRole<int> { Id = 3, Name = "Admin", NormalizedName = "ADMIN" }
         );
 
         builder.Entity<Message>()

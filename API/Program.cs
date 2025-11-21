@@ -30,7 +30,7 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
     options.User.RequireUniqueEmail = true;
-}).AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+}).AddRoles<IdentityRole<int>>().AddEntityFrameworkStores<AppDbContext>();
  
 builder.Services
     .AddAuthentication(options => {
@@ -81,8 +81,9 @@ using var scope = app.Services.CreateScope();
 try
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(context);
+    await Seed.SeedUsers(userManager);
 }
 catch (Exception ex)
 {

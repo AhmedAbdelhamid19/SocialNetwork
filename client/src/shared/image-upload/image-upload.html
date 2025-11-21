@@ -15,7 +15,7 @@
             [class.border-purple-300]="isDragging">
             
             <p class="mb-2 text-lg">Click to upload or drag and drop</p>
-            <input type="file" id="dropzone-file" class="hidden">
+            <input type="file" id="dropzone-file" (change)="onFileSelected($event)" class="hidden">
         </label>
     </div>
     @if (imageSrc()) {
