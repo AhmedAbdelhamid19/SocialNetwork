@@ -1,4 +1,6 @@
 using API.Entities;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +29,12 @@ namespace API.Controllers
         public IActionResult GetBadRequest() 
         {
             return BadRequest("This is not Good Request");
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-only")]
+        public IActionResult GetUnauthorized() 
+        {
+            return Ok("You are authorized");
         }
     }
 }

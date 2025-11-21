@@ -6,6 +6,7 @@ import { AccountService } from '../../../core/services/account-service';
 import { MemberService } from '../../../core/services/member-service';
 import { FollowService } from '../../../core/services/follow-service';
 import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
+import { Location } from '@angular/common';
 
 
 @Component({
@@ -27,11 +28,12 @@ export class MemberDetailed {
   private router = inject(Router);
   private followService = inject(FollowService);
   protected title = signal<string | undefined>('Profile');
-  private accountService = inject(AccountService);
+  protected accountService = inject(AccountService);
   protected memberService = inject(MemberService);
   protected isCurrentUser = computed(() => {
     return this.accountService.currentUser()?.id === Number(this.route.snapshot.paramMap.get('id'));
   });
+  protected location = inject(Location);
   isFollowing = signal<boolean>(false);
   ngOnInit() {
     this.isFollowing.set(this.followService.followingIds()
@@ -54,5 +56,8 @@ export class MemberDetailed {
     this.followService.toggleFollow(member.id).subscribe(() => {
       this.isFollowing.set(!this.isFollowing());
     });
+  }
+  back() {
+    this.location.back();
   }
 }

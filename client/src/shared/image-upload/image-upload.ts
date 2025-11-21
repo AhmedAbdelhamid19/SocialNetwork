@@ -15,12 +15,12 @@ export class ImageUpload {
   disabled: any;
 
   onFileSelected(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
 
-  const file = input.files[0];
-  this.previewImage(file);
-  this.fileToUpload = file;
+    const file = input.files[0];
+    this.previewImage(file);
+    this.fileToUpload = file;
   }
   onDragOver(event: DragEvent) {
     event.preventDefault();

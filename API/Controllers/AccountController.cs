@@ -15,7 +15,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService) : BaseApiController
+    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService) : BaseApiController 
     {
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO register) 
@@ -34,25 +34,30 @@ namespace API.Controllers
                 }
             };
 
-            userManager.Users.Add(user, register.Password);
-
-            if(await context.SaveChangesAsync() > 0)
+            var result = userManager.CreateAsync(user, register.Password);
+            if(!result.Result.Succeeded)
             {
-                return Ok(user.ToDto(tokenService));
+                foreach(var error in result.Result.Errors)
+                {
+                    ModelState.AddModelError("identity", error.Description);
+                }
+                return ValidationProblem();
             }
-            return BadRequest("Problem registering user");
+            await userManager.AddToRoleAsync(user, "Member");
+            return await user.ToDto(tokenService);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO login) 
         {
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Email!.Equals(login.Email));
+            var user = await userManager.FindByEmailAsync(login.Email);
             if(user == null)
-                return Unauthorized("Invalid email address");
+                return Unauthorized("email or password is invalid");
                 
-             
-            
-            return user.ToDto(tokenService);
+            var result = await userManager.CheckPasswordAsync(user, login.Password);
+            if(!result)
+                return Unauthorized("email or password is invalid");
+            return await user.ToDto(tokenService);
         }
     }
 }

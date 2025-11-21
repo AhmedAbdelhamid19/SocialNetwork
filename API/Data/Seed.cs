@@ -65,7 +65,8 @@ public class Seed
         var adminResult = await userManager.CreateAsync(admin, "Pa$$w0rd");
         if(!adminResult.Succeeded)
         {
-            throw new Exception("Failed to create admin user: " + string.Join(", ", adminResult.Errors.Select(e => e.Description)));
+            throw new Exception("Failed to create admin user: " + 
+                string.Join(", ", adminResult.Errors.Select(e => e.Description)));
         }
         await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"] );
     }

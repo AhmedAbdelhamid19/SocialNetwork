@@ -32,8 +32,7 @@ builder.Services.AddIdentityCore<AppUser>(options =>
     options.User.RequireUniqueEmail = true;
 }).AddRoles<IdentityRole<int>>().AddEntityFrameworkStores<AppDbContext>();
  
-builder.Services
-    .AddAuthentication(options => {
+builder.Services.AddAuthentication(options => {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // to use JWT bearer authentication to check if the user is logged in.
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // If authentication fails, respond with 401 Unauthorized using JWT rules
     })
@@ -52,6 +51,9 @@ builder.Services
         };
     });
 
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
+    .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
 // CORS = Cross-Origin Resource Sharing, To protect users from malicious websites.
 // these websites can attempt to make requests to your API from a different origin 
 // (domain, protocol, or port) than your API is hosted on.

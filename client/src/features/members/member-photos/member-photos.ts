@@ -27,18 +27,30 @@ export class MemberPhotos implements OnInit {
     // get photo of the member and reorder to have main photo first
     const memberId = this.route.parent?.snapshot.paramMap.get('id')!;
     if(memberId) {
+      console.log('Loading photos for member ID:', memberId);
       this.photoService.getMemberPhotos(memberId).subscribe({
         next: (photos: Photo[]) => {
-          let photo = photos.find(p => p.url === this.memberService.member()?.imageUrl);
-          if(photo) {
-            let reordered = [photo, ...photos.filter(p => p.id !== photo!.id)];
-            this.photos.set(reordered)
+          console.log('Photos loaded:', photos);
+          const mainPhotoUrl = this.accountService.currentUser()?.imageUrl;
+          if(mainPhotoUrl) {
+            const photo = photos.find(p => p.url === mainPhotoUrl);
+            if(photo) {
+              let reordered = [photo, ...photos.filter(p => p.id !== photo!.id)];
+              this.photos.set(reordered)
+            }
+          } else {
+            this.photos.set(photos);
           }
+        },
+        error: (err: any) => {
+          this.toastService.error('Failed to load photos.');
+          console.error('Error loading photos:', err);
         }
       });
     }
   }
   onUploadImage(file: File) {
+    console.log(file);
     this.loading.set(true);
     this.photoService.uploadPhoto(file).subscribe({
       next: (photo: Photo) => {

@@ -2,15 +2,17 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 
-public class TokenService(IConfiguration config) : ITokenService
+public class TokenService(IConfiguration config, UserManager<AppUser> userManager) : ITokenService
 {
-    public string CreateToken(AppUser user)
+    public async Task<string> CreateToken(AppUser user)
     {
         var claims = new List<Claim>
         {
@@ -18,6 +20,9 @@ public class TokenService(IConfiguration config) : ITokenService
             new(ClaimTypes.Name, user.DisplayName),
             new(ClaimTypes.Email, user.Email!)
         };
+
+        var roles = await userManager.GetRolesAsync(user);
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         // key for the token
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["PrivateKey"] ?? 

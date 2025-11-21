@@ -40,7 +40,7 @@ export class Nav implements OnInit {
       },
       error: error => {
         console.log(error);
-        this.toastService.error("please type email and password correct!");
+        this.toastService.error(error.error || 'login failed');
       }
     });
   }
