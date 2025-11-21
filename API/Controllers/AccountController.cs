@@ -27,8 +27,7 @@ namespace API.Controllers
             var user = new AppUser {
                 DisplayName = register.DisplayName,
                 Email = register.Email,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(register.Password)),
-                PasswordSalt = hmac.Key,
+                UserName = register.Email,
                 Member = new Member
                 {
                     DisplayName = register.DisplayName,
@@ -51,24 +50,18 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO login) 
         {
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Email.Equals(login.Email));
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email!.Equals(login.Email));
             if(user == null)
                 return Unauthorized("Invalid email address");
-            
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-            var ComputeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(login.Password));
-
-            if(!ComputeHash.SequenceEqual(user.PasswordHash)) 
-            {
-                return Unauthorized("Invalid Password");
-            }
+                
+             
             
             return user.ToDto(tokenService);
         }
 
         private async Task<bool> EmailExist(string email) 
         {
-            return await context.Users.AnyAsync(u => u.Email.ToLower().Equals(email.ToLower()));
+            return await context.Users.AnyAsync(u => u.Email!.ToLower().Equals(email.ToLower()));
         }
     }
 }
