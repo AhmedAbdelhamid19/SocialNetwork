@@ -28,7 +28,7 @@ export type EditMember = {
 export class MemberParams {
   gender?: string;
   minAge  = 18;
-  maxAge = 100;
+  maxAge = 150;
   pageSize = 5;
   pageNumber = 1;
   orderBy = 'lastActive';

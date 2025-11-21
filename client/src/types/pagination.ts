@@ -6,7 +6,6 @@ export type Pagination = {
 };
 
 export type PaginatedResult<T> = {
-  // you may use pagination with any type of data (members, messages, photos etc...)
   items: T[];
   metadata: Pagination;
 };

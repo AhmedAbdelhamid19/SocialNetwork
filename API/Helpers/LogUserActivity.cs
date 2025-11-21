@@ -14,8 +14,9 @@ public class LogUserActivity: IAsyncActionFilter
     // or specific controllers/actions where you want to log user activity.
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        // after the request is handled in backend you check if the user is authenticated
+        // Code runs BEFORE the action
         var resultContext = await next();
+        // Code runs AFTER the action
         if (resultContext.HttpContext.User.Identity?.IsAuthenticated != true) return;
 
 

@@ -13,11 +13,6 @@ import { MemberParams } from '../../../types/member';
   modal (not model) is just a small popup window that appears on top of the page.
 */
 export class FilterModal implements OnInit {
-  /*
-  In the HTML, we give the dialog element a template reference variable like: <dialog #filterModal> ... </dialog>
-  This allows us to access the dialog element in our TypeScript code using @ViewChild, this dialog used by DaisyUI for modals (not models).
-  ! means that remove warning and i promise that this won't be null when accessed.
-  */
  @ViewChild('filterModal') modelRef!: ElementRef<HTMLDialogElement>;
  closeModel = output();
  submitData = output<MemberParams>();
@@ -29,15 +24,11 @@ export class FilterModal implements OnInit {
       this.filterParams.set(JSON.parse(filters));
     }
   }
-  /*
-    These are native methods (showModal() and close()),
-    not Angular-specific — they belong to the HTML <dialog> element.
-  */
+
   openModal() {
     this.modelRef.nativeElement.showModal(); // built-in HTML dialog method
   }
   closeModal() {
-    console.log("close in child");
     this.modelRef.nativeElement.close(); // built-in HTML dialog method
     this.closeModel.emit(); // send signal to parent that modal is closed
   }

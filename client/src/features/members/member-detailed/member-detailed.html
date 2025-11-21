@@ -4,7 +4,7 @@
             <img src="{{member.imageUrl || '/user.png'}}" alt="Member Image" class="rounded-full mx-10 m-3" />
             <div class="card-body">
                 <div class="flex flex-col items-center mb-3">
-                    <div class="flex text-2xl text-primary"> {{member.displayName}}, {{member.dateOfBirth | age}}</div>
+                    <div class="flex text-2xl text-primary"> {{member.displayName}}, {{member.dateOfBirth | timeAgo}}</div>
                     <div class="text-sm">
                         {{member.city}}, {{member.country}}
                     </div>

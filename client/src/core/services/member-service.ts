@@ -1,7 +1,7 @@
 import { HttpClient, HttpHandler, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { EditMember, Member, MemberParams, Photo } from '../../types/member'; 
+import { EditMember, Member, MemberParams } from '../../types/member'; 
 import { tap } from 'rxjs';
 import { PaginatedResult } from '../../types/pagination';
 
@@ -39,23 +39,7 @@ export class MemberService {
       })
     );
   }
-  getMemberPhotos(id: string) {
-    return this.http.get<Photo[]>(this.baseUrl + `members/${id}/photos`);
-  }
   updateMember(member: EditMember) {
      return this.http.put(this.baseUrl + `members/update`, member);
-  }
-  uploadPhoto(file: File) {
-    // must be FormData to send file to backend because it expects multipart/form-data 
-    const formData = new FormData(); 
-    // must be 'file' because the backend expects it
-    formData.append('file', file);
-    return this.http.post<Photo>(this.baseUrl + 'members/add-photo', formData);
-  }
-  setMainPhoto(photoId: number) {
-    return this.http.put(this.baseUrl + `members/set-main-photo/${photoId}`, {});
-  }
-  deletePhoto(photoId: number) {
-    return this.http.delete(this.baseUrl + `members/delete-photo/${photoId}`);
   }
 }

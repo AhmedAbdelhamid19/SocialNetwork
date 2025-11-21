@@ -6,6 +6,8 @@ import { MemberCard } from '../member-card/member-card';
 import { PaginatedResult } from '../../../types/pagination';
 import { Paginator } from "../../../shared/paginator/paginator";
 import { FilterModal } from '../filter-modal/filter-modal';
+import { ToastService } from '../../../core/services/toast-service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-memeber-list',
@@ -20,6 +22,7 @@ export class MemeberList implements OnInit {
   @ViewChild('filterModal') modal!: FilterModal;
   private memberService = inject(MemberService);
   private followService = inject(FollowService);
+  private toastService = inject(ToastService);
   protected paginatedMembers = signal<PaginatedResult<Member> | null>(null);
   protected memberParams = new MemberParams();
 
@@ -29,7 +32,7 @@ export class MemeberList implements OnInit {
       this.memberParams = JSON.parse(filters);
     }
     // load following ids so each member-card can correctly compute follow status
-    this.followService.getFollowingIdsPaged({ predicate: 'following', pageNumber: 1, pageSize: 1000 }).subscribe({
+    this.followService.getFollowingIdsPaged({ predicate: 'following', pageNumber: 1, pageSize: 5 }).subscribe({
       next: () => {
         // proceed to load members after we have the follow ids
         this.loadMembers();
@@ -47,6 +50,7 @@ export class MemeberList implements OnInit {
         this.paginatedMembers.set(members);
       },
       error: (error) => {
+        this.toastService.error('Failed to load members.');
         console.error('Error loading members:', error);
       }
     });
@@ -62,8 +66,12 @@ export class MemeberList implements OnInit {
     console.log("Modal closed, handling parent state");
   }
   onFilterChanged(newParams: MemberParams) {
-    // when filter modal submit new params with submit button, we update memberParams and reload members
-    this.memberParams = newParams;
+    // when filter modal submit new params with submit button,
+    // we update memberParams and reload members
+    localStorage.setItem('filters', JSON.stringify(newParams));
+    const pageSize = this.memberParams.pageSize;
+    this.memberParams = {...newParams, pageSize};
+    
     this.loadMembers();
   }
   openModal() {

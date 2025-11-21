@@ -9,14 +9,10 @@
         [formControl]="control"
     >
     @if(control.hasError('required') && control.touched) {
-        <div class="text-error text-xs mt-1 ml-1">
-            This field is required.
-        </div>
+        <div class="text-error text-xs mt-1 ml-1">This field is required.</div>
     }
     @if(control.hasError('email') && control.touched) {
-        <div class="text-error text-xs mt-1 ml-1">
-            Invalid email address.
-        </div>
+        <div class="text-error text-xs mt-1 ml-1">Invalid email address.</div>
     }
     @if(control.hasError('minlength') && control.touched) {
         <div class="text-error text-xs mt-1 ml-1">
@@ -29,8 +25,6 @@
         </div>
     }
     @if(control.hasError('notMatching') && control.touched) {
-        <div class="text-error text-xs mt-1 ml-1"> 
-            fields must be matched.
-        </div>
+        <div class="text-error text-xs mt-1 ml-1"> fields must be matched.</div>
     }
 </label>

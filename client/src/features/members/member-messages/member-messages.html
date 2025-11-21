@@ -1,7 +1,11 @@
 <div class="flex flex-col w-full h-[70vh]">
     <div class="flex flex-col grow overflow-auto">
         @for(message of messages(); track message.id) {
-          <div class="chat" [class.chat-end]="message.currentUserSender" [class.chat-start]="!message.currentUserSender">
+          <div 
+            class="chat" 
+            [class.chat-end]="message.currentUserSender" 
+            [class.chat-start]="!message.currentUserSender">
+            
             <div class="chat-image avatar">
               <div class="w-10 rounded-full">
                 <img
@@ -19,7 +23,7 @@
               <div class="chat-footer opacity-50">Seen {{(message.dateRead) | timeAgo}}</div>
             } @else if (message.currentUserSender && !message.dateRead) {
               <div class="chat-footer opacity-50">Not read</div>
-          } @else {
+            } @else {
               <div class="chat-footer opacity-50">Delivered</div>
             }
           </div>

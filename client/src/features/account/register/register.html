@@ -8,14 +8,15 @@
     <div class="card-body w-full">
         @if(currentStep() === 1) {
             <form [formGroup]="credentialForm" class="flex flex-col gap-4 m1 p-2 w-full steps">
-                <app-text-input label="Email" type="email" formControlName="email"/>
-                <app-text-input label="Display name" formControlName="displayName"/>
-                <app-text-input label="Password" type="password" formControlName="password"/>
-                <app-text-input label="Confirm password" type="password" formControlName="confirmPassword"/>
+                <app-text-input [label]="'Email'" type="email" formControlName="email"/>
+                <app-text-input [label]="'Display name'" formControlName="displayName"/>
+                <app-text-input [label]="'Password'" type="password" formControlName="password"/>
+                <app-text-input [label]="'Confirm password'" type="password" formControlName="confirmPassword"/>
 
                 <div class="flex items-center justify-end gap-3">
                     <button class="btn" type="button" (click)="cancel()">Cancel</button>
-                    <button class="btn btn-primary" type="button" (click)="nextStep()" [disabled]="credentialForm.invalid">Next</button>
+                    <button class="btn btn-primary" type="button" (click)="nextStep()" 
+                        [disabled]="credentialForm.invalid">Next</button>
                 </div> 
             </form>
         }
@@ -32,13 +33,14 @@
                         <div>female</div>
                     </label>
                 </div>
-                <app-text-input label="Date of Birth" type="date" formControlName="dateOfBirth"/>
-                <app-text-input label="City" formControlName="city"/>
-                <app-text-input label="Country" formControlName="country"/>
+                <app-text-input [label]="'Date of Birth'" type="date" formControlName="dateOfBirth"/>
+                <app-text-input [label]="'City'" formControlName="city"/>
+                <app-text-input [label]="'Country'" formControlName="country"/>
 
                 <div class="flex items-center justify-end gap-3">
                     <button class="btn" type="button" (click)="previousStep()">Back</button>
-                    <button class="btn btn-primary" type="submit" [disabled]="profileForm.invalid">Register</button>
+                    <button class="btn btn-primary" type="submit" 
+                        [disabled]="profileForm.invalid">Register</button>
                 </div> 
             </form>
         }

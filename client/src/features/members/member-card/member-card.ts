@@ -1,13 +1,13 @@
 import { Component, computed, inject, input, OnInit, output, Signal, signal } from '@angular/core';
 import { Member } from '../../../types/member';
 import { RouterLink } from '@angular/router';
-import { AgePipe } from '../../../core/pipes/age-pipe';
 import { FollowService } from '../../../core/services/follow-service';
 import { ToastService } from '../../../core/services/toast-service';
+import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 
 @Component({
   selector: 'app-member-card',
-  imports: [RouterLink, AgePipe],
+  imports: [RouterLink, TimeAgoPipe],
   templateUrl: './member-card.html',
   styleUrl: './member-card.css'
 })

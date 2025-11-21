@@ -19,7 +19,6 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         
         return await query.FirstOrDefaultAsync(m => m.Id == id);
     } 
-
     public async Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberParams)
     {
         var query = context.Members.AsQueryable();
@@ -28,13 +27,11 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         {
             query = query.Where(m => m.Gender == memberParams.Gender);
         }
-        
         query = memberParams.OrderBy switch
         {
             "created" => query.OrderByDescending(m => m.Created),
             _ => query.OrderByDescending(m => m.LastActive)
         };
-        
         var minDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MaxAge - 1));
         var maxDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
 

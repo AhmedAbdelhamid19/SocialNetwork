@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { ToastService } from '../services/toast-service';
 import { NavigationExtras, Router } from '@angular/router';
 import { catchError } from 'rxjs';
+import { Location } from '@angular/common';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);

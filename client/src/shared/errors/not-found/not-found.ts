@@ -9,7 +9,6 @@ import { Component, inject } from '@angular/core';
 })
 export class NotFound {
   private location = inject(Location);
-
   goBack() {
     this.location.back();
   }

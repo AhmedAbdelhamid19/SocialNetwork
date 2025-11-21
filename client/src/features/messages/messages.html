@@ -36,11 +36,18 @@
     </thead>
     <tbody>
         @for(message of paginatedMessages()?.items; track message.id) {
-            <tr routerLink="/members/{{isInbox ? message.senderId : message.recipientId}}/messages" [class.font-bold]="!message.dateRead && !isInbox" class="hover:bg-base-200/50 cursor-pointer">
+            <tr 
+                routerLink="/members/{{isInbox ? message.senderId : message.recipientId}}/messages" 
+                [class.font-bold]="!message.dateRead && !isInbox" 
+                class="hover:bg-base-200/50 cursor-pointer">
+
                 <td class="w-2/8">
                     <div class="flex items-center gap-3">
                         <div class="h-12 w-12">
-                            <img src="{{isInbox ? message.senderImageUrl : message.recipientImageUrl || '/user.png'}}" alt="Member Image" class="h-full w-full object-cover rounded" />
+                            <img 
+                                src="{{isInbox ? message.senderImageUrl : message.recipientImageUrl || '/user.png'}}" 
+                                alt="Member Image" 
+                                class="h-full w-full object-cover rounded" />
                         </div>
                         <div>
                             {{isInbox ? message.senderDisplayName : message.recipientDisplayName}}

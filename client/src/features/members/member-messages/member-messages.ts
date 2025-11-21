@@ -28,7 +28,6 @@ export class MemberMessages implements OnInit{
     this.loadMessages();
   }
   loadMessages() {
-    console.log('Loading message thread');
     const memberId = this.memberService.member()?.id;
     if(memberId) {
       this.messageService.getMessageThread(memberId).subscribe({

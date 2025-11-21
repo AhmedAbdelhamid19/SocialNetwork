@@ -29,4 +29,8 @@
 
 <!-- you make template reference variable to controll it inside typescript file throw ViewChild -->
 <!-- hidden here if you don't have any members-->
-<app-filter-modal #filterModal [hidden]="!paginatedMembers()" (closeModel)="handleModalClose()" (submitData)="onFilterChanged($event)"/>
+<app-filter-modal 
+    #filterModal 
+    (closeModel)="handleModalClose()" 
+    (submitData)="onFilterChanged($event)"
+/>

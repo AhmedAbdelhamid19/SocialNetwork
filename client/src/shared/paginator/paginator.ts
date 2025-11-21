@@ -7,15 +7,13 @@ import { Component, computed, input, model, output } from '@angular/core';
   styleUrl: './paginator.css'
 })
 export class Paginator {
-  // input is readable only (value passed by parent and can't be changed by the child)
-  // model is readable and writable
-  pageNumber = model(1); // count here from the user, model to allow changing it internally
-  pageSize = model(10); // count here from the user, model to allow changing it internally
-  totalCount = input(0); // total items count from parent
-  totalPages = input(0); // total pages from parent
-  pageSizeOptions = input([5, 10, 20, 50]); // page size options from parent
-  pageChange = output<{pageNumber: number, pageSize: number}>(); // event emitter to notify parent of page changes
-  lastItemIndex = computed(() => { // used to show "Showing items X to Y of Z"
+  pageNumber = model(1);
+  pageSize = model(5);
+  totalCount = input(0);
+  totalPages = input(0);
+  pageSizeOptions = input([5, 10, 20, 50]);
+  pageChange = output<{pageNumber: number, pageSize: number}>();
+  lastItemIndex = computed(() => {
     return Math.min(this.pageNumber()* this.pageSize(), this.totalCount());
   })
 

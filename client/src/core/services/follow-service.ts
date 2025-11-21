@@ -13,10 +13,11 @@ export class FollowService {
   private http = inject (HttpClient);
   followersIds = signal<number[]>([]);
   followingIds = signal<number[]>([]);
-  
   toggleFollow(targetMemberId: number) {
-    return this.http.post(this.baseUrl + `follow/toggle-follow/${targetMemberId}`, {});
+    return this.http.post(this.baseUrl + 
+        `follow/toggle-follow/${targetMemberId}`, {});
   }
+
   getFollowersIdsPaged(params?: FollowParams) {
     let httpParams = new HttpParams();
     if (params?.predicate) httpParams = httpParams.append('predicate', params.predicate);

@@ -32,7 +32,6 @@ export class Lists implements OnInit {
     this.loadFollowersPage(this.followersMeta().pageNumber, this.followersMeta().pageSize);
     this.loadFollowingPage(this.followingMeta().pageNumber, this.followingMeta().pageSize);
   }
-
   private loadFollowersPage(page: number, pageSize: number) {
     const params: FollowParams = { predicate: 'followers', pageNumber: page, pageSize };
     this.followService.getFollowersPaged(params).subscribe({
@@ -51,7 +50,6 @@ export class Lists implements OnInit {
       }
     });
   }
-
   private loadFollowingPage(page: number, pageSize: number) {
     const params: FollowParams = { predicate: 'following', pageNumber: page, pageSize };
     this.followService.getFollowingPaged(params).subscribe({
@@ -70,14 +68,11 @@ export class Lists implements OnInit {
       }
     });
   }
-
   // paginator handlers (wired from template)
   onFollowersPageChange(event: { pageNumber: number; pageSize: number }) {
     this.loadFollowersPage(event.pageNumber, event.pageSize);
   }
-
   onFollowingPageChange(event: { pageNumber: number; pageSize: number }) {
     this.loadFollowingPage(event.pageNumber, event.pageSize);
   }
-
 }

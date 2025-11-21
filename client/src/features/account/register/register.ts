@@ -20,6 +20,7 @@ export class Register {
   protected credentialForm: FormGroup;
   protected profileForm: FormGroup;
   protected currentStep = signal(1);
+  // this is errors came from server during registration
   protected validationErrors = signal<string[]>([]);
   
   constructor() {
@@ -28,18 +29,17 @@ export class Register {
       displayName: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
       confirmPassword: ['', [Validators.required, this.matching('password')]]
-    });
-    this.credentialForm.controls['password'].valueChanges.subscribe(() => {
-      // this mean when the password field changes, we need to run 
-      // validators in the confirm password field (custom validator ...).
-      this.credentialForm.controls['confirmPassword'].updateValueAndValidity();
-    });
-
+    });    
+    
     this.profileForm = this.formBuilder.group({
       gender: ['male', [Validators.required]],
       dateOfBirth: ['', [Validators.required]],
       city: ['', [Validators.required]],
       country: ['', [Validators.required]]
+    });
+
+    this.credentialForm.controls['password'].valueChanges.subscribe(() => {
+      this.credentialForm.controls['confirmPassword'].updateValueAndValidity();
     });
   }
   matching(otherField: string) {
