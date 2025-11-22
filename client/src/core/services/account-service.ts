@@ -39,6 +39,7 @@ export class AccountService {
     this.followService.clearFollows();
   }
   setCurrentUser(user: User) {
+    user.roles = this.getRolesFromToken(user.token);
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     // Load following IDs to maintain follow status
@@ -52,5 +53,10 @@ export class AccountService {
     this.followService.getFollowingPaged({ 
       predicate: 'following', pageNumber: 1, pageSize: 5 
     }).subscribe();
+  }
+  private getRolesFromToken(token: string): string[] {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    // token encoded in base64, and Atop decode a base64 string
+    return Array.isArray(payload.role) ? payload.role : [payload.role];
   }
 }

@@ -36,7 +36,7 @@ export const routes: Routes = [
                 ]
             },
             {path: 'lists', component: Lists},
-            {path: 'messages', component: Messages}
+            {path: 'messages', component: Messages},
             {path: 'admin', component: Admin}
         ]
     },

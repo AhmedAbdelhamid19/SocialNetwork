@@ -37,7 +37,7 @@ namespace API.Controllers
         public IActionResult GetPhotosForModeration()
         {
             // Logic to retrieve users with their roles would go here.
-            return Ok(new { Message = "This is a protected endpoint for admin, moderator users." });
+            return Ok(new { Message = "admin, moderator only." });
         }
 
         [Authorize(Policy = "RequireAdminRole")]
@@ -52,13 +52,15 @@ namespace API.Controllers
             var userRoles = await userManager.GetRolesAsync(user);
 
             // for example, if user is in role "Member" and selectedRoles contains "Member",
-            // we don't need to add "Member" again, so we use Except to get only the roles that are not already assigned to the user.
+            // we don't need to add "Member" again, so we use Except to get only the roles 
+            // that are not already assigned to the user.
             var result = await userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
             if (!result.Succeeded) return BadRequest("Failed to add to roles");
 
             // for example, if user is in role "Admin" but selectedRoles does not contain "Admin",
-            // we need to remove "Admin" from the user, so we use Except to get only the roles that are assigned to the user but not in selectedRoles.
+            // we need to remove "Admin" from the user, so we use Except to get only the roles that 
+            // are assigned to the user but not in selectedRoles.
             result = await userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
             if (!result.Succeeded) return BadRequest("Failed to remove from roles");
