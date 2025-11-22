@@ -14,6 +14,7 @@ import { MemberMessages } from '../features/members/member-messages/member-messa
 import { memberResolver } from '../features/members/member-resolver';
 import { preventUnsavedChangesGuard } from '../core/guards/prevent-unsaved-changes-guard';
 import { Admin } from '../features/admin/admin';
+import { adminGuard } from '../core/guards/admin-guard';
 
 export const routes: Routes = [
     {path: '', component: Home},
@@ -37,7 +38,7 @@ export const routes: Routes = [
             },
             {path: 'lists', component: Lists},
             {path: 'messages', component: Messages},
-            {path: 'admin', component: Admin}
+            {path: 'admin', component: Admin, canActivate: [adminGuard]}
         ]
     },
     {path: 'errors', component: TestErrors},
