@@ -40,6 +40,30 @@ namespace API.Controllers
             return Ok(new { Message = "This is a protected endpoint for admin, moderator users." });
         }
 
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPost("edit-roles/{id}")]
+         public async Task<IActionResult> EditRoles(string id, [FromQuery] string roles)
+        {
+            var selectedRoles = roles.Split(',').ToArray();
 
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null) return NotFound("Could not find user");
+
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            // for example, if user is in role "Member" and selectedRoles contains "Member",
+            // we don't need to add "Member" again, so we use Except to get only the roles that are not already assigned to the user.
+            var result = await userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+
+            if (!result.Succeeded) return BadRequest("Failed to add to roles");
+
+            // for example, if user is in role "Admin" but selectedRoles does not contain "Admin",
+            // we need to remove "Admin" from the user, so we use Except to get only the roles that are assigned to the user but not in selectedRoles.
+            result = await userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+
+            if (!result.Succeeded) return BadRequest("Failed to remove from roles");
+
+            return Ok(await userManager.GetRolesAsync(user));
+        }
     }
 }

@@ -53,7 +53,7 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
-    .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+    .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator")); // the user must be either in Admin or Moderator role
 // CORS = Cross-Origin Resource Sharing, To protect users from malicious websites.
 // these websites can attempt to make requests to your API from a different origin 
 // (domain, protocol, or port) than your API is hosted on.
