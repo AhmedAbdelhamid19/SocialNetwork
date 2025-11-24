@@ -1,1 +1,18 @@
-<p>admin works!</p>
+ <!-- name of each tab group should be unique -->
+<div class="tabs tabs-lift ">
+    @if(accountService.currentUser()?.roles?.includes('Admin')) {
+        <input type="radio" name="my_tabs_3" class="tab" aria-label="User Management" checked="checked"/>
+        <div class="tab-content bg-base-100 border-base-300 p-6">
+            <app-user-management/>
+        </div>
+        <input type="radio" name="my_tabs_3" class="tab" aria-label="Photo Management"/>
+        <div class="tab-content bg-base-100 border-base-300 p-6">
+            <app-photo-management/>
+        </div>
+    } @else {
+        <input type="radio" name="my_tabs_3" class="tab" aria-label="Photo Management" checked="checked"/>
+        <div class="tab-content bg-base-100 border-base-300 p-6">
+            <app-photo-management/>
+        </div>
+    }
+</div>

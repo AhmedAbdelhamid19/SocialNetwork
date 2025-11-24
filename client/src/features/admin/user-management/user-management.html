@@ -1,0 +1,50 @@
+<div class="h-[75vh] overflow-auto">
+    <table class="table table-fixed w-full  border border-base-content/10 bg-base-100">
+        <thead>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            @for(user of users(); track $index) {
+                <tr>
+                    <td>{{user.displayName}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.roles}}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" (click)="openRolesModal(user)"> Edit Roles </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<dialog #rolesModal class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg mb-3">Select Roles for {{selectedUser?.displayName}}</h3>
+        <fieldset>
+            @for(role of availableRoles; track $index) {
+                <label class="fieldset-label mb-1">
+                    <input 
+                        (change)="toggleRoleSelection(role, $event)"
+                        type="checkbox" 
+                        class="checkbox"
+                        name="roles" 
+                        value="{{role}}" 
+                        [checked]="selectedUser?.roles?.includes(role)"
+                        [disabled]="selectedUser?.email === 'admin@test.com' && role == 'Admin'"
+                    />
+                    <span class="ml-2">{{role}}</span>
+                </label>
+            }
+        </fieldset>
+        <div class="modal-action">
+            <button class="btn" (click)="this.rolesModal.nativeElement.close()">Cancel</button>
+            <button class="btn btn-primary" (click)="saveRoles()">Save</button>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button></button>
+    </form>
+</dialog>

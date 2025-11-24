@@ -25,7 +25,10 @@ namespace API.Controllers
                 {
                     user.Id,
                     user.UserName,
-                    Roles = roles
+                    displayName = user.DisplayName,
+                    email = user.Email,
+                    Roles = roles,
+                    imageUrl = user.ImageUrl
                 });
             }
 
