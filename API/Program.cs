@@ -4,6 +4,7 @@ using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,11 +50,29 @@ builder.Services.AddAuthentication(options => {
             ValidateIssuer = false, // if true you need to set validIssuer
             ValidateAudience = false // if true you need to set validAudience
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // 1. Grab the token from the query string
+                var accessToken = context.Request.Query["access_token"];
+
+                // 2. Check the request path
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken; // Attach token to context (context of the request not the hub context)
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
     .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator")); // the user must be either in Admin or Moderator role
+builder.Services.AddSignalR();
 // CORS = Cross-Origin Resource Sharing, To protect users from malicious websites.
 // these websites can attempt to make requests to your API from a different origin 
 // (domain, protocol, or port) than your API is hosted on.
@@ -79,6 +98,7 @@ app.UseCors("AllowAngularApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<PresenceHub>("hubs/presence");
 
 using var scope = app.Services.CreateScope();
 try
