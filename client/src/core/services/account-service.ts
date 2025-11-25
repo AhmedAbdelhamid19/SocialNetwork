@@ -14,33 +14,53 @@ export class AccountService {
   currentUser = signal<User | null>(null);
   baseUrl = environment.apiUrl;
 
+  getRefreshToken() {
+    return this.http.post<User>(this.baseUrl + 
+      "account/refresh-token", {}, {withCredentials: true});
+  }
+  startRefreshTokenInterval() {
+    // remember it from JS
+    // it stop when you close the tap or the browser
+    // so it keep runing when the user visit the app
+    setInterval(() => { 
+      return this.http.post<User>(this.baseUrl + 
+        "account/refresh-token", {}, {withCredentials: true}).subscribe({
+          next: user => {
+            this.currentUser.set(user);
+          },
+          error: () => {
+            this.logout();
+          }
+        })
+    }, 5*60*1000)
+  }
   register(creds: RegisterCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/register', creds).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/register', creds, {withCredentials: true}).pipe(
       tap(user => {
         if(user) {
           this.setCurrentUser(user);
+          this.startRefreshTokenInterval();
         }
       })
     );
   }
   login(creds: LoginCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/login', creds).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/login', creds, {withCredentials: true}).pipe(
       tap(user => {
         if(user) {
           this.setCurrentUser(user);
+          this.startRefreshTokenInterval();
         }
       })
     )
   }
   logout() {
-    localStorage.removeItem('user');
     localStorage.removeItem('filters');
     this.currentUser.set(null);
     this.followService.clearFollows();
   }
   setCurrentUser(user: User) {
     user.roles = this.getRolesFromToken(user.token);
-    localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     // Load following IDs to maintain follow status
     this.followService.getFollowingIdsPaged({ 
