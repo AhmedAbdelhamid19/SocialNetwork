@@ -67,7 +67,8 @@ builder.Services.AddCors(options =>
         // when you deploy your angular app you need to change this to your angular app url
             policy.WithOrigins("http://localhost:4200", "https://localhost:4200") // represent frontend url
             .AllowAnyHeader() // allow any header like authorization header, content-type, etc
-            .AllowAnyMethod(); // get, post, put, delete
+            .AllowAnyMethod() // get, post, put, delete
+            .AllowCredentials();
     });
 });
 var app = builder.Build();

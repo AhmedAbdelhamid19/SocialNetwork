@@ -6,7 +6,7 @@ import { HasRole } from '../../shared/directives/has-role';
 
 @Component({
   selector: 'app-admin',
-  imports: [PhotoManagement, UserManagement, HasRole],
+  imports: [PhotoManagement, UserManagement],
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })

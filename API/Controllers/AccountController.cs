@@ -44,6 +44,8 @@ namespace API.Controllers
                 return ValidationProblem();
             }
             await userManager.AddToRoleAsync(user, "Member");
+
+            await SetRefreshToken(user);
             return await user.ToDto(tokenService);
         }
 
@@ -57,7 +59,42 @@ namespace API.Controllers
             var result = await userManager.CheckPasswordAsync(user, login.Password);
             if(!result)
                 return Unauthorized("email or password is invalid");
+
+            await SetRefreshToken(user);
             return await user.ToDto(tokenService);
         }
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<UserDTO>> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if(refreshToken == null)  return NoContent(); 
+
+            var user = await userManager.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && 
+                    u.RefreshTokenExpiryTime > DateTime.UtcNow);
+            if(user == null) return Unauthorized("Invalid Refresh Token");
+
+            // set new refresh token in user table and in cookie
+            await SetRefreshToken(user);
+            // return new jwt access token for 7 minutes
+            return await user.ToDto(tokenService);
+        }
+        
+        private async Task SetRefreshToken(AppUser user)
+        {
+            var refreshToken = tokenService.CreateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await userManager.UpdateAsync(user);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // not accessible via JavaScript
+                Expires = user.RefreshTokenExpiryTime,
+                SameSite = SameSiteMode.Strict, // mitigate CSRF attacks
+                Secure = true // ensure the cookie is only sent over HTTPS
+            };
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+        }
     }
-}
+} 
