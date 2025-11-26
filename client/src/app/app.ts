@@ -11,18 +11,6 @@ import { User } from '../types/user';
   templateUrl: './app.html',
   styleUrl: './app.css'  
 })
-export class App implements OnInit {
+export class App{
   protected router = inject(Router);
-  private accountService = inject(AccountService);
-
-  ngOnInit() {
-    // Restore user from localStorage on app start
-    const userString = localStorage.getItem('user');
-    if (userString) {
-      const user: User = JSON.parse(userString);
-      this.accountService.setCurrentUser(user);
-    }
-  }
-
-
 }

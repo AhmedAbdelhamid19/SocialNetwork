@@ -4,6 +4,7 @@ import { LoginCreds, RegisterCreds, User } from '../../types/user';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { FollowService } from './follow-service';
+import { PresenceService } from './presence-service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class AccountService {
   private http = inject(HttpClient);
   private followService = inject(FollowService);
   currentUser = signal<User | null>(null);
+  private presenceService = inject(PresenceService);
   baseUrl = environment.apiUrl;
 
   getRefreshToken() {
@@ -58,6 +60,7 @@ export class AccountService {
     localStorage.removeItem('filters');
     this.currentUser.set(null);
     this.followService.clearFollows();
+    this.presenceService.stopHubConnection();
   }
   setCurrentUser(user: User) {
     user.roles = this.getRolesFromToken(user.token);
@@ -73,6 +76,11 @@ export class AccountService {
     this.followService.getFollowingPaged({ 
       predicate: 'following', pageNumber: 1, pageSize: 5 
     }).subscribe();
+
+    if(!this.presenceService.isConnected()) {
+      console.log('Starting SignalR connection');
+      this.presenceService.createHubConnection(user);
+    }
   }
   private getRolesFromToken(token: string): string[] {
     const payload = JSON.parse(atob(token.split('.')[1]));
