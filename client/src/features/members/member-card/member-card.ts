@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FollowService } from '../../../core/services/follow-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
+import { PresenceService } from '../../../core/services/presence-service';
 
 @Component({
   selector: 'app-member-card',
@@ -14,9 +15,12 @@ import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 export class MemberCard implements OnInit {
   private followService = inject(FollowService);
   private toastService = inject(ToastService);
+  private presenceService = inject(PresenceService);
   member = input.required<Member>();
   isFollowing = signal<boolean>(false);
-
+  protected isOnline = computed(() => {
+    return this.presenceService.onlineUsers().map(id => Number(id)).includes(this.member().id);
+  });
   ngOnInit(): void {
     this.isFollowing.set(this.followService.followingIds().includes(this.member().id))
   }

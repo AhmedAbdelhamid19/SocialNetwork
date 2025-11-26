@@ -7,6 +7,7 @@ import { MemberService } from '../../../core/services/member-service';
 import { FollowService } from '../../../core/services/follow-service';
 import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 import { Location } from '@angular/common';
+import { PresenceService } from '../../../core/services/presence-service';
 
 
 @Component({
@@ -29,9 +30,13 @@ export class MemberDetailed {
   private followService = inject(FollowService);
   protected title = signal<string | undefined>('Profile');
   protected accountService = inject(AccountService);
+  protected presenceService = inject(PresenceService);
   protected memberService = inject(MemberService);
   protected isCurrentUser = computed(() => {
     return this.accountService.currentUser()?.id === Number(this.route.snapshot.paramMap.get('id'));
+  });
+  protected isOnline = computed(() => {
+  return this.presenceService.onlineUsers().map(id => Number(id)).includes(this.memberService.member()?.id??-1);
   });
   protected location = inject(Location);
   isFollowing = signal<boolean>(false);

@@ -1,10 +1,11 @@
-import { Component, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MessageService } from '../../../core/services/message-service';
 import { MemberService } from '../../../core/services/member-service';
 import { Message } from '../../../types/message';
 import { DatePipe } from '@angular/common';
 import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 import { FormsModule } from '@angular/forms';
+import { PresenceService } from '../../../core/services/presence-service';
 
 @Component({
   selector: 'app-member-messages',
@@ -18,6 +19,10 @@ export class MemberMessages implements OnInit{
   private memberService = inject(MemberService);
   protected messages = signal<Message[]>([]);
   protected MessageContent = '';
+  protected presenceService = inject(PresenceService);
+  protected isOnline = computed(() => {
+  return this.presenceService.onlineUsers().map(id => Number(id)).includes(this.memberService.member()?.id??-1);
+  });
 
 
   // changing the signal that affect the dom elements will put in microtask queue that run after the current call stack is cleared but before the macrotask queue and before callbacks like setTimeout

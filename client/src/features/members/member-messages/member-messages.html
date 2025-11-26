@@ -12,6 +12,9 @@
                   [src]="message.senderImageUrl"
                   alt="user's image"
                 />
+                @if(isOnline()) {
+                  <span class="absolute top-1 left-1 w-1.5 h-1.5 bg-yellow-400  rounded-full"></span>
+                }
               </div>
             </div>
             <div class="chat-header">
