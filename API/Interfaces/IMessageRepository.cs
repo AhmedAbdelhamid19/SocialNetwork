@@ -1,4 +1,5 @@
 using System;
+using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Helpers;
@@ -40,4 +41,34 @@ public interface IMessageRepository
     /// <returns></returns>
     Task<IReadOnlyList<MessageDTO>> GetMessageThread(int currentMemberId, int recipientId); 
     public Task<bool> SaveAllAsync();
+    /// <summary>
+    /// Add a new group to the database
+    /// </summary>
+    /// <param name="group"></param>
+    void AddGroup(Group group);
+    /// <summary>
+    /// Efficiently delete a connection when user closes tab / disconnects.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <returns></returns>
+    Task RemoveConnection(string connectionId);
+    /// <summary>
+    /// Finds a single Connection row by its primary key (ConnectionId).
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <returns></returns>
+    Task<Connection?> GetConnection(string connectionId);
+    /// <summary>
+    /// Get a group by name AND include all its connections
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <returns></returns>
+    Task<Group?> GetMessageGroup(string groupName);
+    /// <summary>
+    /// Given a connectionId, find which group that connection belongs to.
+    /// it fetches the group and also all connections inside it.
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <returns></returns>
+    Task<Group?> GetGroupForConnection(string connectionId);
 }

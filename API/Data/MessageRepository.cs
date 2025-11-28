@@ -10,6 +10,11 @@ namespace API.Data;
 
 public class MessageRepository(AppDbContext context) : IMessageRepository
 {
+    public void AddGroup(Group group)
+    {
+        context.Groups.Add(group);
+    }
+
     public void AddMessage(Message message)
     {
         context.Messages.Add(message);
@@ -18,10 +23,33 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
     {
         context.Messages.Remove(message);
     }
+
+    public async Task<Connection?> GetConnection(string connectionId)
+    {
+        return await context.Connections.FindAsync(connectionId);
+    }
+
+    public async Task<Group?> GetGroupForConnection(string connectionId)
+    {
+        // in database, connection can't exist without a group.
+        // so we can use the connection Model to get the group throw it's navigation property.
+        // it's efficient than using the group model to get the connection throw it's connections navigation property (joins query).
+        var connection = await context.Connections.Include(c => c.Group)
+            .FirstOrDefaultAsync(c => c.ConnectionId == connectionId);
+        return connection?.Group;
+    }
+
     public async Task<Message?> GetMessage(int id)
     {
         return await context.Messages.FindAsync(id);
     }
+
+    public async Task<Group?> GetMessageGroup(string groupName)
+    {
+        return await context.Groups.Include(g => g.Connections)
+            .FirstOrDefaultAsync(g => g.Name == groupName);
+    }
+
     public async Task<PaginatedResult<MessageDTO>> GetMessagesForMember(MessageParams messageParams, int memberId)
     {
         var query = context.Messages.OrderByDescending(m => m.MessageSent).AsQueryable();
@@ -62,8 +90,17 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
             .ToListAsync();
     }
 
+    public Task RemoveConnection(string connectionId)
+    {
+        context.Connections
+            .Where(c => c.ConnectionId == connectionId)
+            .ExecuteDeleteAsync();
+        return Task.CompletedTask;
+    }
+
     public async Task<bool> SaveAllAsync()
     {
         return await context.SaveChangesAsync() > 0;
     }
+
 } 
