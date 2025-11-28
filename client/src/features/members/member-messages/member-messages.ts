@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { MessageService } from '../../../core/services/message-service';
 import { MemberService } from '../../../core/services/member-service';
 import { Message } from '../../../types/message';
@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './member-messages.html',
   styleUrl: './member-messages.css'
 })
-export class MemberMessages implements OnInit{
+export class MemberMessages implements OnInit, OnDestroy{
   @ViewChild('endOfMessages') endOfMessages!: ElementRef;
   protected presenceService = inject(PresenceService);
   private memberService = inject(MemberService);
@@ -33,6 +33,7 @@ export class MemberMessages implements OnInit{
       })
     })
   }
+
   ngOnInit(): void {
     this.router.parent?.paramMap.subscribe({
       next: params => {
@@ -56,5 +57,10 @@ export class MemberMessages implements OnInit{
     if(this.endOfMessages) {
       this.endOfMessages.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
+
+  }    
+  ngOnDestroy(): void {
+    console.log("destroyed");
+    this.messageService.stopHubConnection();
   }
 } 

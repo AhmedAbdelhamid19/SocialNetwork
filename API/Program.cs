@@ -108,6 +108,8 @@ try
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
+    await context.Connections.ExecuteDeleteAsync();
+    await context.Groups.ExecuteDeleteAsync();
     await Seed.SeedUsers(userManager);
 }
 catch (Exception ex)

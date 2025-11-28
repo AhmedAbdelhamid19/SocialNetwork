@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using API.Data;
 using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
@@ -15,13 +16,16 @@ public class MessageHub(IMessageRepository messageRepository, IMemberRepository 
         int curUser = GetCurrentUser(), otherUser = GetOtherUser();
         var groupName = GetGroupName(curUser, otherUser);
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        await AddToGroup(groupName);
 
         var messages = await messageRepository.GetMessageThread(curUser, otherUser);
         await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
     }
-    public override Task OnDisconnectedAsync(Exception? exception)
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        return base.OnDisconnectedAsync(exception);
+        Console.WriteLine(Context.ConnectionId);
+        await messageRepository.RemoveConnection(Context.ConnectionId);
+        await base.OnDisconnectedAsync(exception);
     }
     public async Task SendMessage(SendMessageDTO sendMessageDTO)
     {
@@ -36,15 +40,37 @@ public class MessageHub(IMessageRepository messageRepository, IMemberRepository 
             RecipientId = recipient.Id,
             Content = sendMessageDTO.Content
         };
-
+        
+        var groupName = GetGroupName(senderId, recipientId);
+        var group = await messageRepository.GetMessageGroup(groupName);
+        if(group != null && group.Connections.Any(c => c.UserId == recipientId)) {
+            message.DateRead = DateTime.UtcNow;
+        }
         messageRepository.AddMessage(message);
 
         if (await messageRepository.SaveAllAsync())
         {
-            var groupName = GetGroupName(senderId, recipientId);
             await Clients.Group(groupName)
                 .SendAsync("NewMessage",message.ToMessageDTO());
         }
+    }
+    /// <summary>
+    /// add current user connected to hub to group in database, user may have multiple connection in same group
+    /// these connection may be from multiple tabs, browsers or devices
+    /// </summary>
+    /// <param name="groupName"></param>
+    /// <returns></returns>
+    private async Task<bool> AddToGroup(string groupName)
+    {
+        var group = await messageRepository.GetMessageGroup(groupName);
+        var connection = new Connection(Context.ConnectionId, GetCurrentUser());
+        if (group == null)
+        {
+            group = new Group(groupName);
+            messageRepository.AddGroup(group);
+        }
+        group.Connections.Add(connection);
+        return await messageRepository.SaveAllAsync();
     }
     public static string GetGroupName(int? curUser, int? otherUser)
     {
@@ -52,6 +78,7 @@ public class MessageHub(IMessageRepository messageRepository, IMemberRepository 
     }
     public int GetCurrentUser()
     {
+        // you can use it now because in program.cs you added the token to the context.
         var memberId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? throw new Exception("sender id not found, try to authenticate again");
         int curUser = int.Parse(memberId);

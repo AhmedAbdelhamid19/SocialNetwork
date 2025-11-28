@@ -90,12 +90,11 @@ public class MessageRepository(AppDbContext context) : IMessageRepository
             .ToListAsync();
     }
 
-    public Task RemoveConnection(string connectionId)
+    public async Task RemoveConnection(string connectionId)
     {
-        context.Connections
+        await context.Connections
             .Where(c => c.ConnectionId == connectionId)
             .ExecuteDeleteAsync();
-        return Task.CompletedTask;
     }
 
     public async Task<bool> SaveAllAsync()

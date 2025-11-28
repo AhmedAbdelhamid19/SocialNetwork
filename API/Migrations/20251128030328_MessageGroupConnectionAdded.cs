@@ -19,7 +19,8 @@ namespace API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Groups", x => x.Name);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Connections",
@@ -43,7 +44,8 @@ namespace API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Connections_GroupName",
                 table: "Connections",
-                column: "GroupName");
+                column: "GroupName"
+            );
         }
 
         /// <inheritdoc />
