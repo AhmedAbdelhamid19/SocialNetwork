@@ -12,7 +12,6 @@ public class PresenceTracker
         it holds all online users and it's devices in memory
     */
     private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> OnlineUsers = new();
-
     // used when user start to connect to the hub
     public Task UserConnected(string userId, string connectionId)
     {
@@ -22,7 +21,6 @@ public class PresenceTracker
 
         return Task.CompletedTask;
     }
-
     public Task UserDisconnected(string userId, string connectionId)
     {
         // remember: out here make use user connection outside
@@ -39,5 +37,13 @@ public class PresenceTracker
     public Task<string[]> GetOnlineUsers()
     {
         return Task.FromResult(OnlineUsers.Keys.OrderBy(k=>k).ToArray());
+    }
+
+    public static Task<List<string>> GetConnection(string userId) 
+    {
+        if(OnlineUsers.TryGetValue(userId, out var connections)) {
+            return Task.FromResult(connections.Keys.ToList());
+        }
+        return Task.FromResult(new List<string>());
     }
 }

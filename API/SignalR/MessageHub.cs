@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace API.SignalR;
 
-public class MessageHub(IMessageRepository messageRepository, IMemberRepository memberRepository): Hub
+public class MessageHub(IMessageRepository messageRepository,
+    IMemberRepository memberRepository, IHubContext<PresenceHub> presenceHub): Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -43,7 +44,8 @@ public class MessageHub(IMessageRepository messageRepository, IMemberRepository 
         
         var groupName = GetGroupName(senderId, recipientId);
         var group = await messageRepository.GetMessageGroup(groupName);
-        if(group != null && group.Connections.Any(c => c.UserId == recipientId)) {
+        bool isUserInGroup = group != null && group.Connections.Any(c => c.UserId == recipientId);
+        if(isUserInGroup) {
             message.DateRead = DateTime.UtcNow;
         }
         messageRepository.AddMessage(message);
@@ -52,14 +54,14 @@ public class MessageHub(IMessageRepository messageRepository, IMemberRepository 
         {
             await Clients.Group(groupName)
                 .SendAsync("NewMessage",message.ToMessageDTO());
+            var connections = await PresenceTracker.GetConnection($"{recipientId}");
+            if(connections != null && connections.Count > 0 && !isUserInGroup) 
+            {
+                await presenceHub.Clients.Clients(connections)
+                    .SendAsync("newMessageReceived", message.ToMessageDTO());
+            }
         }
     }
-    /// <summary>
-    /// add current user connected to hub to group in database, user may have multiple connection in same group
-    /// these connection may be from multiple tabs, browsers or devices
-    /// </summary>
-    /// <param name="groupName"></param>
-    /// <returns></returns>
     private async Task<bool> AddToGroup(string groupName)
     {
         var group = await messageRepository.GetMessageGroup(groupName);
