@@ -37,7 +37,8 @@ export class PresenceService {
       this.onlineUsers.set(ids);
     });
     this.hubConnection.on("newMessageReceived", (message: Message) => {
-      this.toastService.info( `new message recieved from: ${message.senderDisplayName}.`);
+      this.toastService.info( `new message recieved from: ${message.senderDisplayName}.`, 
+        5000,message.senderImageUrl, `/members/${message.senderId}/messages`);
     }) 
   }
   stopHubConnection() { 

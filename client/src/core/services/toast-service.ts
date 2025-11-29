@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToastService {
+  private router = inject(Router);
+
   constructor() {
     this.createToastContainer();
   }
@@ -17,14 +20,20 @@ export class ToastService {
   }
 
   private createToastElement(
-    message: string, alertClass: string, duration: number = 3000) {
+    message: string, alertClass: string, duration: number = 3000, img?: string, route?: string) {
     const toastContainer = document.getElementById('toast-container');
     if(!toastContainer) return;
 
     const toast = document.createElement('div');
-    // class="alert alert-success shadow-lg"
-    toast.classList.add('alert', alertClass, 'shadow-lg');
+    toast.classList.add('alert', alertClass, 'shadow-lg', 'flex', 'items-center', 'gap-3', 'cursor-pointer'); 
+    if(route) {
+      toast.addEventListener('click', () => {
+        this.router.navigateByUrl(route)
+        toastContainer.removeChild(toast);
+      });
+    }
     toast.innerHTML = `
+       ${img ? `<img src=${img || '/user.png'} class='w-10 h-10 rounded-full'>` : ''}
       <span>${message}</span>
       <button class="ml-4 btn btn-sm btn-ghost">x</button>
     `;
@@ -40,16 +49,16 @@ export class ToastService {
       }
     }, duration);
   }
-  success(message: string, duration: number = 3000) {
-    this.createToastElement(message, 'alert-success', duration);
+  success(message: string, duration: number = 3000, img?: string, route?: string) {
+    this.createToastElement(message, 'alert-success', duration, img, route);
   }
-  error(message: string, duration: number = 3000) {
-    this.createToastElement(message, 'alert-error', duration);
+  error(message: string, duration: number = 3000, img?: string, route?: string) {
+    this.createToastElement(message, 'alert-error', duration, img, route);
   }
-  warning(message: string, duration: number = 3000) {
-    this.createToastElement(message, 'alert-warning', duration);
+  warning(message: string, duration: number = 3000, img?: string, route?: string) {
+    this.createToastElement(message, 'alert-warning', duration, img, route);
   }
-  info(message: string, duration: number = 3000) {
-    this.createToastElement(message, 'alert-info', duration);
+  info(message: string, duration: number = 3000, img?: string, route?: string) {
+    this.createToastElement(message, 'alert-info', duration, img, route);
   } 
 }
