@@ -1,12 +1,9 @@
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using API.Data;
+
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +92,20 @@ namespace API.Controllers
                 Secure = true // ensure the cookie is only sent over HTTPS
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<ActionResult> Logout() 
+        {
+            await userManager.Users
+                .Where(u => u.Id == User.GetMemberId())
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.RefreshToken, _ => null)
+                    .SetProperty(x => x.RefreshTokenExpiryTime, _ => DateTime.MinValue)
+                );
+            Response.Cookies.Delete("refreshToken");
+            return Ok();
         }
     }
 } 

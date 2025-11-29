@@ -57,10 +57,14 @@ export class AccountService {
     )
   }
   logout() {
-    localStorage.removeItem('filters');
-    this.currentUser.set(null);
-    this.followService.clearFollows();
-    this.presenceService.stopHubConnection();
+    this.http.post(`${this.baseUrl}account/logout`, {}, {withCredentials: true}).subscribe({
+      next: () => {
+        localStorage.removeItem('filters');
+        this.currentUser.set(null);
+        this.followService.clearFollows();
+        this.presenceService.stopHubConnection();
+      }
+    })
   }
   setCurrentUser(user: User) {
     user.roles = this.getRolesFromToken(user.token);
