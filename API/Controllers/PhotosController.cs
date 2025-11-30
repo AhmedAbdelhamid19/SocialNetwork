@@ -12,12 +12,12 @@ namespace API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class PhotosController(IMemberRepository memberRepository, IPhotoService photoService) : BaseApiController
+    public class PhotosController(IUnitOfWork unitOfWork, IPhotoService photoService) : BaseApiController
     {   
         [HttpGet("{id}")]
         public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(int id)
         {
-            var photos = await memberRepository.GetPhotosForMemberAsync(id);
+            var photos = await unitOfWork.MemberRepository.GetPhotosForMemberAsync(id);
             return Ok(photos);
         }
 
@@ -27,7 +27,7 @@ namespace API.Controllers
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository
+            var member = await unitOfWork.MemberRepository
             .GetMemberByIdAsync(int.Parse(memberId), includeUser: false, includePhotos: false);
             if (member == null) return BadRequest("Member doesn't exist");
 
@@ -45,7 +45,7 @@ namespace API.Controllers
 
             member.Photos.Add(photo);
 
-            if (await memberRepository.SaveAllAsync())
+            if (await unitOfWork.Complete())
             {
                 // CreatedAtAction to point to MembersController.GetMember
                 return CreatedAtAction("GetMember", "Members", new { id = member.Id }, photo);
@@ -60,7 +60,7 @@ namespace API.Controllers
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository
+            var member = await unitOfWork.MemberRepository
                 .GetMemberByIdAsync(int.Parse(memberId), includeUser: true, includePhotos: true);
             if (member == null) return BadRequest("Member doesn't exist");
 
@@ -72,7 +72,7 @@ namespace API.Controllers
             member.ImageUrl = photo.Url;
             member.User.ImageUrl = photo.Url;
 
-            if (await memberRepository.SaveAllAsync()) return NoContent();
+            if (await unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Failed to set main photo, try again");
         }
@@ -83,7 +83,7 @@ namespace API.Controllers
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository
+            var member = await unitOfWork.MemberRepository
                 .GetMemberByIdAsync(int.Parse(memberId), includeUser: false, includePhotos: true);
             if (member == null) return BadRequest("Member doesn't exist");
 
@@ -100,7 +100,7 @@ namespace API.Controllers
 
             member.Photos.Remove(photo);
 
-            if (await memberRepository.SaveAllAsync()) return Ok();
+            if (await unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to delete the photo");
         }

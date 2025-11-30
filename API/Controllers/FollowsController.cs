@@ -9,7 +9,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FollowController(IFollowRepository followRepository, IMemberRepository memberRepository) : BaseApiController
+    public class FollowController(IUnitOfWork unitOfWork) : BaseApiController
     {
         [HttpPost("toggle-Follow/{targetMemberId}")]
         public async Task<ActionResult> ToggleFollow(int targetMemberId)
@@ -18,10 +18,10 @@ namespace API.Controllers
             if (memberId == null) return BadRequest("no id found in token");
             int sourceUserId = int.Parse(memberId);
 
-            var targetMember = await memberRepository.GetMemberByIdAsync(targetMemberId);
+            var targetMember = await unitOfWork.MemberRepository.GetMemberByIdAsync(targetMemberId);
             if (targetMember == null) return NotFound("Target member not found");
             
-            var existingFollow = await followRepository.GetFollowAsync(sourceUserId, targetMemberId);
+            var existingFollow = await unitOfWork.FollowRepository.GetFollowAsync(sourceUserId, targetMemberId);
             if (existingFollow == null)
             {
                 var newFollow = new Entities.MemberFollow
@@ -29,15 +29,15 @@ namespace API.Controllers
                     SourceMemberId = sourceUserId,
                     TargetMemberId = targetMemberId
                 };
-                followRepository.AddFollow(newFollow);
-                if (await followRepository.SaveAllAsync())
+                unitOfWork.FollowRepository.AddFollow(newFollow);
+                if (await unitOfWork.Complete())
                     return Ok(new { message = "Followed successfully" });
                 return BadRequest("Failed to follow member");
             }
             else
             {
-                followRepository.RemoveFollow(existingFollow);
-                if (await followRepository.SaveAllAsync())
+                unitOfWork.FollowRepository.RemoveFollow(existingFollow);
+                if (await unitOfWork.Complete())
                     return Ok(new { message = "Unfollowed successfully" });
                 return BadRequest("Failed to unfollow member");
             }
@@ -52,7 +52,7 @@ namespace API.Controllers
 
             try
             {
-                var follows = await followRepository.GetAllFollowsIdsAsync(memberId, followParams);
+                var follows = await unitOfWork.FollowRepository.GetAllFollowsIdsAsync(memberId, followParams);
                 return Ok(follows);
             }
             catch (ArgumentException ex)
@@ -70,7 +70,7 @@ namespace API.Controllers
 
             try
             {
-                var follows = await followRepository.GetAllFollowsAsync(memberId, followParams);
+                var follows = await unitOfWork.FollowRepository.GetAllFollowsAsync(memberId, followParams);
                 return Ok(follows);
             }
             catch (ArgumentException ex)

@@ -48,8 +48,4 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
     {
         context.Entry(member).State = EntityState.Modified;
     }
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
 }

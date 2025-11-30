@@ -12,7 +12,7 @@ namespace API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class MembersController(IMemberRepository memberRepository) : BaseApiController
+    public class MembersController(IUnitOfWork unitOfWork) : BaseApiController
     {   
         [HttpGet("GetUsers")]
         public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers([FromQuery]MemberParams memberParams)
@@ -23,13 +23,13 @@ namespace API.Controllers
                 if (memberId == null) return BadRequest("no id found in token");
                 memberParams.CurrentMemberId = int.Parse(memberId);
             }
-            var users = await memberRepository.GetMembersAsync(memberParams);
+            var users = await unitOfWork.MemberRepository.GetMembersAsync(memberParams);
             return Ok(users);
         }
         [HttpGet("GetUser/{id}")]
         public async Task<ActionResult<Member>> GetMember(int id)
         {
-            var user = await memberRepository
+            var user = await unitOfWork.MemberRepository
                 .GetMemberByIdAsync(id, includeUser: false, includePhotos: false);
             if (user == null)
             {
@@ -44,7 +44,7 @@ namespace API.Controllers
             var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (memberId == null) return BadRequest("no id found in token");
 
-            var member = await memberRepository
+            var member = await unitOfWork.MemberRepository
                 .GetMemberByIdAsync(int.Parse(memberId), includeUser: true, includePhotos: false);
 
             if (member == null) return BadRequest("Member doesn't exist");
@@ -56,8 +56,8 @@ namespace API.Controllers
 
             // Update here just to make an entity updated so save change return number greater than 1.
             // it may be optional
-            memberRepository.Update(member);
-            if (await memberRepository.SaveAllAsync()) return NoContent();
+            unitOfWork.MemberRepository.Update(member);
+            if (await unitOfWork.Complete()) return NoContent();
             return BadRequest("Faild to update member");
         }
     }

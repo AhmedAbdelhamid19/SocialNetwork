@@ -40,7 +40,6 @@ public interface IMessageRepository
     /// <param name="recipientId"></param>
     /// <returns></returns>
     Task<IReadOnlyList<MessageDTO>> GetMessageThread(int currentMemberId, int recipientId); 
-    public Task<bool> SaveAllAsync();
     /// <summary>
     /// Add a new group to the database
     /// </summary>

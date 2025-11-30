@@ -35,10 +35,4 @@ public interface IFollowRepository
     /// </summary>
     /// <param name="memberFollow"></param>
     void AddFollow(MemberFollow memberFollow);
-
-    /// <summary>
-    /// save all changes to the database
-    /// </summary>
-    /// <returns></returns>
-    Task<bool> SaveAllAsync();
 }

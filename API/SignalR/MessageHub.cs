@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace API.SignalR;
 
-public class MessageHub(IMessageRepository messageRepository,
-    IMemberRepository memberRepository, IHubContext<PresenceHub> presenceHub): Hub
+public class MessageHub(IUnitOfWork unitOfWork, IHubContext<PresenceHub> presenceHub): Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -19,20 +18,22 @@ public class MessageHub(IMessageRepository messageRepository,
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         await AddToGroup(groupName);
 
-        var messages = await messageRepository.GetMessageThread(curUser, otherUser);
+        var messages = await unitOfWork.MessageRepository.GetMessageThread(curUser, otherUser);
         await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
     }
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         Console.WriteLine(Context.ConnectionId);
-        await messageRepository.RemoveConnection(Context.ConnectionId);
+        await unitOfWork.MessageRepository.RemoveConnection(Context.ConnectionId);
+        // Note: RemoveConnection uses ExecuteDeleteAsync() which executes the DELETE SQL immediately,
+        // so it already persists to the database without needing unitOfWork.Complete()
         await base.OnDisconnectedAsync(exception);
     }
     public async Task SendMessage(SendMessageDTO sendMessageDTO)
     {
         int senderId = GetCurrentUser(), recipientId = GetOtherUser();
-        var sender = await memberRepository.GetMemberByIdAsync(senderId);
-        var recipient = await memberRepository.GetMemberByIdAsync(recipientId);
+        var sender = await unitOfWork.MemberRepository.GetMemberByIdAsync(senderId);
+        var recipient = await unitOfWork.MemberRepository.GetMemberByIdAsync(recipientId);
         if (sender == null || recipient == null)
             throw new HubException("can't find sender or reciever");
 
@@ -43,14 +44,14 @@ public class MessageHub(IMessageRepository messageRepository,
         };
         
         var groupName = GetGroupName(senderId, recipientId);
-        var group = await messageRepository.GetMessageGroup(groupName);
+        var group = await unitOfWork.MessageRepository.GetMessageGroup(groupName);
         bool isUserInGroup = group != null && group.Connections.Any(c => c.UserId == recipientId);
         if(isUserInGroup) {
             message.DateRead = DateTime.UtcNow;
         }
-        messageRepository.AddMessage(message);
+        unitOfWork.MessageRepository.AddMessage(message);
 
-        if (await messageRepository.SaveAllAsync())
+        if (await unitOfWork.Complete())
         {
             await Clients.Group(groupName)
                 .SendAsync("NewMessage",message.ToMessageDTO());
@@ -64,15 +65,15 @@ public class MessageHub(IMessageRepository messageRepository,
     }
     private async Task<bool> AddToGroup(string groupName)
     {
-        var group = await messageRepository.GetMessageGroup(groupName);
+        var group = await unitOfWork.MessageRepository.GetMessageGroup(groupName);
         var connection = new Connection(Context.ConnectionId, GetCurrentUser());
         if (group == null)
         {
             group = new Group(groupName);
-            messageRepository.AddGroup(group);
+            unitOfWork.MessageRepository.AddGroup(group);
         }
         group.Connections.Add(connection);
-        return await messageRepository.SaveAllAsync();
+        return await unitOfWork.Complete();
     }
     public static string GetGroupName(int? curUser, int? otherUser)
     {

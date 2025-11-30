@@ -9,6 +9,4 @@ public interface IMemberRepository
     Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberParams);
     void Update(Member member);
     Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(int memberId);
-    Task<bool> SaveAllAsync();
-
 }

@@ -52,8 +52,4 @@ public class FollowRepository(AppDbContext context) : IFollowRepository
     {
         context.Follows.Add(memberFollow);
     }
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
 }
