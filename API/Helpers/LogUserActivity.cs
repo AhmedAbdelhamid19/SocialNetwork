@@ -7,9 +7,6 @@ namespace API.Helpers;
 
 public class LogUserActivity: IAsyncActionFilter
 {
-    // you should register this class in the dependency injection container in Program.cs 
-    // you should also add [ServiceFilter(typeof(LogUserActivity))] attribute to the base api controller 
-    // or specific controllers/actions where you want to log user activity.
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         // Code runs BEFORE the action
@@ -17,10 +14,6 @@ public class LogUserActivity: IAsyncActionFilter
         // Code runs AFTER the action
         if (resultContext.HttpContext.User.Identity?.IsAuthenticated != true) return;
 
-
-        // if authenticated, get the user id from the token, and update the last active field in the database
-        // you access it in current middle ware  this because you made ( options.SaveToken = true; ) in 
-        // Program.cs when configuring JWT bearer authentication
         var userId = resultContext.HttpContext.User.GetMemberId();
         var dbContext = resultContext.HttpContext.RequestServices.GetService<AppDbContext>();
 

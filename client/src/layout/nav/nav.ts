@@ -29,7 +29,8 @@ export class Nav implements OnInit {
     this.selectedTheme.set(theme);
     localStorage.setItem('theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
-    const elem = document.activeElement as HTMLElement;
+    const elem = document.activeElement as HTMLElement; // currently focoused elements
+    // blur remove currently focous element
     if(elem) elem.blur();
   }
   login() {

@@ -32,14 +32,22 @@ export class MemberDetailed {
   protected accountService = inject(AccountService);
   protected presenceService = inject(PresenceService);
   protected memberService = inject(MemberService);
+  private routeId = signal<number | null>(null);
   protected isCurrentUser = computed(() => {
-    return this.accountService.currentUser()?.id === Number(this.route.snapshot.paramMap.get('id'));
+    return this.accountService.currentUser()?.id === Number(this.routeId())
   });
+  constructor() {
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      this.routeId.set(id);
+    });
+  }
   protected isOnline = computed(() => {
   return this.presenceService.onlineUsers().map(id => Number(id)).includes(this.memberService.member()?.id??-1);
   });
   protected location = inject(Location);
   isFollowing = signal<boolean>(false);
+
   ngOnInit() {
     this.isFollowing.set(this.followService.followingIds()
       .includes(Number(this.route.snapshot.paramMap.get('id'))));

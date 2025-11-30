@@ -33,8 +33,7 @@ export class MemberCard implements OnInit {
           );
         } else {
           this.followService.followingIds.set([
-            ...this.followService.followingIds(),
-            this.member().id
+            ...this.followService.followingIds(), this.member().id
           ]);
         }
         this.isFollowing.set(!this.isFollowing());

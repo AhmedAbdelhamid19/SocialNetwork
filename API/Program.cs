@@ -23,9 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(buil
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloundinarySettings"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<LogUserActivity>();
-builder.Services.AddScoped<IFollowRepository, FollowRepository>();
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddIdentityCore<AppUser>(options =>
 {

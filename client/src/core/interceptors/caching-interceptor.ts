@@ -24,23 +24,20 @@ const invalidateCache = (urlPattern: string) => {
 
 export const cachingInterceptor: HttpInterceptorFn = (req, next) => {
   const cacheKey = generateCacheKey(req.url, req.params);
-  if (req.method === 'POST' || req.method === 'PUT' || req.method === 'DELETE') {
-    // remove the last segment of the url
-    const urlPattern = req.url.split('/').slice(0, -1).join('/');
-    invalidateCache(urlPattern);
-  }
+
   if(req.method.includes('POST') && req.url.includes('/logout')) {
     cache.clear();
   }
-  // Return cached response for GET requests when available
+  if(req.method.includes('POST') && req.url.includes('/toggle-follow')) {
+    invalidateCache("follow/follows-ids")
+    invalidateCache("GetUser")
+  }
   if (req.method === 'GET') {
     const cached = cache.get(cacheKey);
     if (cached) {
-      // Return cached result as observable and skip the request pipeline
       return of(cached);
     }
-  }
-  // For non-cached flows, let the request proceed and store the response when it arrives
+  } 
   return next(req).pipe(
     tap(response => {
       if (req.method === 'GET') {
