@@ -72,33 +72,30 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator")); // the user must be either in Admin or Moderator role
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<PresenceTracker>();
-// CORS = Cross-Origin Resource Sharing, To protect users from malicious websites.
-// these websites can attempt to make requests to your API from a different origin 
-// (domain, protocol, or port) than your API is hosted on.
-// these website can make also another website same as your angular app to make request to your API
-// and make user logged in unknowingly and steal data from the user.
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngularApp", policy =>
-    {
-        // 4200 is the default port for Angular dev server
-        // when you deploy your angular app you need to change this to your angular app url
-            policy.WithOrigins("http://localhost:4200", "https://localhost:4200") // represent frontend url
-            .AllowAnyHeader() // allow any header like authorization header, content-type, etc
-            .AllowAnyMethod() // get, post, put, delete
-            .AllowCredentials();
-    });
-});
+// Simple CORS registration - configure policy inline in the pipeline
+builder.Services.AddCors();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors("AllowAngularApp");
+
+// CORS: allow Angular dev server on 4200
+app.UseCors(x => x
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .WithOrigins("http://localhost:4200", "https://localhost:4200"));
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseDefaultFiles(); // Looks inside wwwroot/ and finds index.html file and serves it
+app.UseStaticFiles(); // Allows .NET to serve js, css, images, etc
+
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/messages");
+app.MapFallbackToController("Index", "Fallback"); // if the user navigates to a route that doesn't exist, redirect to the index page
 
 using var scope = app.Services.CreateScope();
 try
